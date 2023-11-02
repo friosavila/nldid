@@ -1,0 +1,950 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\simulations\did_staggered_poisson_20211110.log
+  log type:  text
+ opened on:  15 Nov 2021, 21:17:59
+
+. 
+. set seed 123
+
+. 
+. global nobs = 1000
+
+. global tobs = 6
+
+. global iter = 1000
+
+. 
+. set obs $nobs
+Number of observations (_N) was 0, now 1,000.
+
+. gen id =_n
+
+. expand $tobs
+(5,000 observations created)
+
+. 
+. bysort id: gen year =_n + 2000
+
+. gen f01 = year == 2001
+
+. gen f02 = year == 2002
+
+. gen f03 = year == 2003
+
+. gen f04 = year == 2004
+
+. gen f05 = year == 2005
+
+. gen f06 = year == 2006
+
+. 
+. gen x0 = rgamma(1,1)
+
+. egen x = mean(x0), by(id)
+
+. 
+. gen c = rnormal(0,1)
+
+. bysort id: replace c = c[1]
+(5000 real changes made)
+
+. 
+. * Add serial correlation in future.
+. gen u = rnormal(0,1)
+
+. 
+. * Generate treatment cohorts:
+. 
+. gen trt = -.5 + x/3 + rnormal(0,1) > 0
+
+. egen trt_sum = sum(trt), by(id)
+
+. gen dinf = trt_sum <= 2
+
+. gen d4 = trt_sum == 3
+
+. gen d5 = trt_sum == 4
+
+. gen d6 = trt_sum >= 5
+
+. 
+. drop trt trt_sum
+
+. 
+. * Generate potential outcomes with common trends imposed.
+. * Also common effect across time.
+. 
+. /*
+> gen yinfstar = .2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 + c - (d4 + d5 + d6) + u
+> gen yinf = rpoisson(1)*exp(yinfstar)
+> gen y4 = yinf
+> replace y4 = rpoisson(1)*exp(yinfstar + .1 + (x - 1)/5 + .2*f05 + .3*f06 + rnormal(0,1)) if year >= 2004
+> gen y5 = yinf
+> replace y5 = rpoisson(1)*exp(yinfstar + .3 + (x - 1)/5 + .2*f06 + rnormal(0,1)) if year >= 2005
+> gen y6 = yinf
+> replace y6 = rpoisson(1)*exp(yinfstar + .2 + (x - 1)/5 + rnormal(0,1)) if year >= 2006
+> */
+. 
+. 
+. /*
+> gen yinfstar = .2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 + c - (d4 + d5 + d6) + u
+> gen yinf = rpoisson(exp(yinfstar))
+> gen y4 = yinf
+> replace y4 = rpoisson(exp(yinfstar + .1 + (x - 1)/5 + .2*f05 + .3*f06 + rnormal(0,1))) if year >= 2004
+> gen y5 = yinf
+> replace y5 = rpoisson(exp(yinfstar + .3 + (x - 1)/5 + .2*f06 + rnormal(0,1))) if year >= 2005
+> gen y6 = yinf
+> replace y6 = rpoisson(exp(yinfstar + .2 + (x - 1)/5 + rnormal(0,1))) if year >= 2006
+> */
+. 
+. 
+. gen yinfstar = 2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 - (d4 + d5 + d6) + c
+
+. gen yinf = rpoisson(exp(yinfstar))
+
+. gen y4 = yinf
+
+. replace y4 = rpoisson(exp(yinfstar + .5 + (x - 1)/5 + .4*f05 + .6*f06)) if year >= 2004
+(2,880 real changes made)
+
+. gen y5 = yinf
+
+. replace y5 = rpoisson(exp(yinfstar + .8 + (x - 1)/5 + .4*f06)) if year >= 2005
+(1,967 real changes made)
+
+. gen y6 = yinf
+
+. replace y6 = rpoisson(exp(yinfstar + .3 + (x - 1)/5)) if year >= 2006
+(921 real changes made)
+
+. 
+. 
+. sum x if d4
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+           x |      1,662    1.052433    .3900407   .2850651   2.459799
+
+. gen x_dm4 = x - r(mean)
+
+. sum x if d5
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+           x |        978    1.077592    .4041076   .3784806   2.310931
+
+. gen x_dm5 = x - r(mean)
+
+. sum x if d6
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+           x |        342    1.239153    .4726932   .2683916   2.286669
+
+. gen x_dm6 = x - r(mean)
+
+. 
+. gen te_4i = y4 - yinf
+
+. sum te_4i if d4 & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_4i |        277    4.870036    6.563326         -7         41
+
+. sum te_4i if d4 & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_4i |        277    12.66787    13.87619         -6         92
+
+. sum te_4i if d4 & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_4i |        277    20.02527    23.51001         -3        178
+
+. 
+. gen te_5i = y5 - yinf
+
+. sum te_5i if d5 & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_5i |        163    10.72393    15.99664         -5        127
+
+. sum te_5i if d5 & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_5i |        163    21.42331    27.28403         -1        184
+
+. 
+. gen te_6i = y6 - yinf
+
+. sum te_6i if d6 & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       te_6i |         57    4.087719    7.769631         -6         26
+
+.         
+. * Observed outcome:
+. 
+. gen y = dinf*yinf + d4*y4 + d5*y5 + d6*y6
+
+. 
+. * Generate time-varying treatment indicator for staggered intervention:
+. 
+. gen w = d4*(f04 + f05 + f06) + d5*(f05 + f06) + d6*f06
+
+. 
+. * save did_staggered_6_count, replace
+. 
+. * Linear model:
+. 
+. reg y c.d4#c.f04 c.d4#c.f05 c.d4#c.f06 ///
+>         c.d5#c.f05 c.d5#c.f06 ///
+>         c.d6#c.f06 ///
+>         c.d4#c.f04#c.x_dm4 c.d4#c.f05#c.x_dm4 c.d4#c.f06#c.x_dm4 ///
+>         c.d5#c.f05#c.x_dm5 c.d5#c.f06#c.x_dm5 ///
+>         c.d6#c.f06#c.x_dm6 ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d4 d5 d6 x c.d4#c.x c.d5#c.x c.d6#c.x, vce(cluster id)
+
+Linear regression                               Number of obs     =      6,000
+                                                F(29, 999)        =      27.24
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1180
+                                                Root MSE          =     20.818
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+        c.d4#c.f04 |   3.622116    .551235     6.57   0.000     2.540405    4.703827
+                   |
+        c.d4#c.f05 |   9.696465   1.051285     9.22   0.000     7.633485    11.75944
+                   |
+        c.d4#c.f06 |   14.47393   1.700752     8.51   0.000     11.13648    17.81139
+                   |
+        c.d5#c.f05 |     7.6757   1.390137     5.52   0.000     4.947776    10.40362
+                   |
+        c.d5#c.f06 |   16.52601   2.455472     6.73   0.000     11.70753    21.34448
+                   |
+        c.d6#c.f06 |  -.8783729   1.315993    -0.67   0.505    -3.460801    1.704055
+                   |
+c.d4#c.f04#c.x_dm4 |   2.025455    1.25739     1.61   0.108    -.4419733    4.492883
+                   |
+c.d4#c.f05#c.x_dm4 |   3.078664   2.519342     1.22   0.222    -1.865144    8.022473
+                   |
+c.d4#c.f06#c.x_dm4 |   3.578049   3.932026     0.91   0.363    -4.137929    11.29403
+                   |
+c.d5#c.f05#c.x_dm5 |   9.862195   4.339832     2.27   0.023     1.345962    18.37843
+                   |
+c.d5#c.f06#c.x_dm5 |   12.79047   7.286017     1.76   0.079    -1.507183    27.08813
+                   |
+c.d6#c.f06#c.x_dm6 |   -.061022   2.452556    -0.02   0.980    -4.873774     4.75173
+                   |
+               f02 |   2.284185   .4496862     5.08   0.000     1.401747    3.166623
+               f03 |   3.869841   .5191866     7.45   0.000      2.85102    4.888662
+               f04 |   5.313888   .6663927     7.97   0.000     4.006198    6.621578
+               f05 |   7.133465   .9115086     7.83   0.000     5.344774    8.922156
+               f06 |   8.619324   1.309793     6.58   0.000     6.049064    11.18958
+                   |
+         c.f02#c.x |  -.3692814   .3923431    -0.94   0.347    -1.139192    .4006297
+                   |
+         c.f03#c.x |  -.8039368   .4524927    -1.78   0.076    -1.691882    .0840084
+                   |
+         c.f04#c.x |  -.2243096   .6342276    -0.35   0.724    -1.468881    1.020261
+                   |
+         c.f05#c.x |   .2195043   .8596941     0.26   0.799    -1.467509    1.906518
+                   |
+         c.f06#c.x |   1.814771   1.365681     1.33   0.184    -.8651626    4.494704
+                   |
+                d4 |  -6.693683   2.425144    -2.76   0.006    -11.45264   -1.934723
+                d5 |  -9.014295    3.09528    -2.91   0.004    -15.08829   -2.940298
+                d6 |  -6.462965   3.096593    -2.09   0.037    -12.53954   -.3863932
+                 x |   3.920483   2.117272     1.85   0.064    -.2343287    8.075294
+                   |
+          c.d4#c.x |  -3.390783   2.455639    -1.38   0.168    -8.209585    1.428019
+                   |
+          c.d5#c.x |  -1.822057     3.0058    -0.61   0.545    -7.720462    4.076349
+                   |
+          c.d6#c.x |  -4.080486   2.770891    -1.47   0.141    -9.517919    1.356948
+                   |
+             _cons |   10.56624   1.974404     5.35   0.000     6.691786     14.4407
+------------------------------------------------------------------------------------
+
+.         
+. poisson y i.w#c.d4#c.f04 i.w#c.d4#c.f05 i.w#c.d4#c.f06 ///
+>         i.w#c.d5#c.f05 i.w#c.d5#c.f06 ///
+>         i.w#c.d6#c.f06 ///
+>         i.w#c.d4#c.f04#c.x i.w#c.d4#c.f05#c.x i.w#c.d4#c.f06#c.x ///
+>         i.w#c.d5#c.f05#c.x i.w#c.d5#c.f06#c.x ///
+>         i.w#c.d6#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d4 d5 d6 x c.d4#c.x c.d5#c.x c.d6#c.x, noomitted vce(cluster id)
+note: 0.w#c.d4#c.f04 omitted because of collinearity.
+note: 0.w#c.d4#c.f05 omitted because of collinearity.
+note: 0.w#c.d4#c.f06 omitted because of collinearity.
+note: 0.w#c.d5#c.f05 omitted because of collinearity.
+note: 0.w#c.d5#c.f06 omitted because of collinearity.
+note: 0.w#c.d6#c.f06 omitted because of collinearity.
+note: 0.w#c.d4#c.f04#c.x omitted because of collinearity.
+note: 0.w#c.d4#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d4#c.f06#c.x omitted because of collinearity.
+note: 0.w#c.d5#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d5#c.f06#c.x omitted because of collinearity.
+note: 0.w#c.d6#c.f06#c.x omitted because of collinearity.
+
+Iteration 0:   log pseudolikelihood = -57189.369  
+Iteration 1:   log pseudolikelihood = -57167.776  
+Iteration 2:   log pseudolikelihood = -57167.706  
+Iteration 3:   log pseudolikelihood = -57167.706  
+
+Poisson regression                                    Number of obs =    6,000
+                                                      Wald chi2(29) = 18333.49
+                                                      Prob > chi2   =   0.0000
+Log pseudolikelihood = -57167.706                     Pseudo R2     =   0.1676
+
+                                     (Std. err. adjusted for 1,000 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+               y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+    w#c.d4#c.f04 |
+              1  |    .391583   .0746487     5.25   0.000     .2452742    .5378918
+                 |
+    w#c.d4#c.f05 |
+              1  |   .7921215     .06983    11.34   0.000     .6552572    .9289858
+                 |
+    w#c.d4#c.f06 |
+              1  |   .9770519   .0643227    15.19   0.000     .8509817    1.103122
+                 |
+    w#c.d5#c.f05 |
+              1  |   .4628746   .0942963     4.91   0.000     .2780572    .6476919
+                 |
+    w#c.d5#c.f06 |
+              1  |   .9597091   .0974411     9.85   0.000      .768728     1.15069
+                 |
+    w#c.d6#c.f06 |
+              1  |   .1272116   .1225341     1.04   0.299    -.1129509     .367374
+                 |
+w#c.d4#c.f04#c.x |
+              1  |   .1289219    .064517     2.00   0.046     .0024709    .2553729
+                 |
+w#c.d4#c.f05#c.x |
+              1  |   .1264781   .0648083     1.95   0.051    -.0005439       .2535
+                 |
+w#c.d4#c.f06#c.x |
+              1  |   .1377539   .0583938     2.36   0.018     .0233041    .2522038
+                 |
+w#c.d5#c.f05#c.x |
+              1  |   .3128748   .0806104     3.88   0.000     .1548813    .4708684
+                 |
+w#c.d5#c.f06#c.x |
+              1  |   .2098606   .0795785     2.64   0.008     .0538897    .3658315
+                 |
+w#c.d6#c.f06#c.x |
+              1  |   .1443247   .1030031     1.40   0.161    -.0575577    .3462071
+                 |
+             f02 |    .208416   .0379779     5.49   0.000     .1339806    .2828513
+             f03 |   .3329039   .0359969     9.25   0.000     .2623514    .4034565
+             f04 |   .4086667   .0338392    12.08   0.000     .3423431    .4749902
+             f05 |   .5002521   .0367621    13.61   0.000     .4281996    .5723045
+             f06 |   .6060358   .0374584    16.18   0.000     .5326187    .6794529
+                 |
+       c.f02#c.x |  -.0183553     .03525    -0.52   0.603    -.0874441    .0507335
+                 |
+       c.f03#c.x |  -.0442343   .0339979    -1.30   0.193    -.1108689    .0224003
+                 |
+       c.f04#c.x |  -.0011234     .03377    -0.03   0.973    -.0673114    .0650646
+                 |
+       c.f05#c.x |   .0018875   .0343204     0.05   0.956    -.0653792    .0691543
+                 |
+       c.f06#c.x |   .0126012   .0344408     0.37   0.714    -.0549015    .0801038
+                 |
+              d4 |  -.7883933   .2355963    -3.35   0.001    -1.250154    -.326633
+              d5 |  -1.080905   .3716488    -2.91   0.004    -1.809323   -.3524867
+              d6 |  -.6237098   .3069842    -2.03   0.042    -1.225388   -.0220318
+               x |    .214588   .1322091     1.62   0.105    -.0445371    .4737131
+                 |
+        c.d4#c.x |  -.1689593   .2138914    -0.79   0.430    -.5881786    .2502601
+                 |
+        c.d5#c.x |   .0699068   .3160326     0.22   0.825    -.5495058    .6893193
+                 |
+        c.d6#c.x |  -.2566719   .2305834    -1.11   0.266    -.7086071    .1952633
+                 |
+           _cons |   2.378198   .1352512    17.58   0.000      2.11311    2.643285
+----------------------------------------------------------------------------------
+
+.         
+. 
+. /*
+> margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d4 == 1 & f04 == 1) noestimcheck
+> margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d4 == 1 & f05 == 1) noestimcheck   
+> margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d4 == 1 & f06 == 1) noestimcheck   
+> margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d5 == 1 & f05 == 1) noestimcheck   
+> margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d5 == 1 & f06 == 1) noestimcheck   
+> margins, dydx(w) at(d4 = 0 d5 = 0 d6 = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d6 == 1 & f06 == 1) noestimcheck
+> */
+.         
+. margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d4 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs = 1,662
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 1
+    f04 = 1
+    f05 = 0
+    f06 = 0
+    d5  = 0
+    d6  = 0
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |    5.39724    .419823    12.86   0.000     4.574402    6.220078
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d4 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs = 1,662
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 1
+    f04 = 0
+    f05 = 1
+    f06 = 0
+    d5  = 0
+    d6  = 0
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   12.98953   .8373648    15.51   0.000     11.34832    14.63073
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d4 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs = 1,662
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 1
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    d5  = 0
+    d6  = 0
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   19.87518   1.382208    14.38   0.000      17.1661    22.58425
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d5 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs =   978
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 0
+    f04 = 0
+    f05 = 1
+    f06 = 0
+    d5  = 1
+    d6  = 0
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   10.58584   1.162226     9.11   0.000     8.307924    12.86376
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d5 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs =   978
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 0
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    d5  = 1
+    d6  = 0
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   21.60623   2.098346    10.30   0.000     17.49355    25.71891
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d4 = 0 d5 = 0 d6 = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d6 == 1) noestimcheck
+
+Average marginal effects                               Number of obs   = 6,000
+Model VCE: Robust                                      Subpop. no. obs =   342
+
+Expression: Predicted number of events, predict()
+dy/dx wrt:  1.w
+At: d4  = 0
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    d5  = 0
+    d6  = 1
+    f02 = 0
+    f03 = 0
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   3.677389   .8528744     4.31   0.000     2.005786    5.348992
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. 
+. * Callaway and Sant'Anna:
+. 
+. gen first_treat = 0
+
+. replace first_treat = 2004 if d4
+(1,662 real changes made)
+
+. replace first_treat = 2005 if d5
+(978 real changes made)
+
+. replace first_treat = 2006 if d6
+(342 real changes made)
+
+. 
+. csdid y x, ivar(id) time(year) gvar(first_treat)
+...............
+Difference-in-difference with Multiple Time Periods
+Outcome model  : 
+Treatment model: 
+------------------------------------------------------------------------------
+             | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+g2004        |
+ t_2001_2002 |  -1.847574   .3845543    -4.80   0.000    -2.601286   -1.093861
+ t_2002_2003 |  -.8901693   .3625371    -2.46   0.014    -1.600729   -.1796096
+ t_2003_2004 |   4.080082    .551744     7.39   0.000     2.998684    5.161481
+ t_2003_2005 |   10.35706   1.009538    10.26   0.000     8.378397    12.33571
+ t_2003_2006 |   15.48057    1.62952     9.50   0.000     12.28677    18.67437
+-------------+----------------------------------------------------------------
+g2005        |
+ t_2001_2002 |  -1.570467   .4245547    -3.70   0.000    -2.402579   -.7383551
+ t_2002_2003 |  -1.132141   .4026777    -2.81   0.005    -1.921374    -.342907
+ t_2003_2004 |  -.9933657   .4612623    -2.15   0.031    -1.897423   -.0893082
+ t_2004_2005 |   9.027979   1.304784     6.92   0.000     6.470651    11.58531
+ t_2004_2006 |   18.23784   2.353423     7.75   0.000     13.62522    22.85047
+-------------+----------------------------------------------------------------
+g2006        |
+ t_2001_2002 |  -1.864081   .6209788    -3.00   0.003    -3.081177   -.6469852
+ t_2002_2003 |  -.5633688   .6003463    -0.94   0.348    -1.740026    .6132883
+ t_2003_2004 |  -1.456314   .5763366    -2.53   0.012    -2.585913    -.326715
+ t_2004_2005 |  -1.297532   .7182536    -1.81   0.071    -2.705283    .1102189
+ t_2005_2006 |   1.933703   1.062611     1.82   0.069    -.1489749    4.016382
+------------------------------------------------------------------------------
+Control: Never Treated
+
+See Callaway and Sant'Anna (2020) for details
+
+. csdid y x, ivar(id) time(year) gvar(first_treat) method(reg)
+...............
+Difference-in-difference with Multiple Time Periods
+Outcome model  : regression adjustment
+Treatment model: none
+------------------------------------------------------------------------------
+             | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+g2004        |
+ t_2001_2002 |  -1.883246   .3921137    -4.80   0.000    -2.651775   -1.114717
+ t_2002_2003 |  -.8648769   .3546365    -2.44   0.015    -1.559952   -.1698022
+ t_2003_2004 |   4.044916   .5561917     7.27   0.000     2.954801    5.135032
+ t_2003_2005 |    10.2713   1.011671    10.15   0.000     8.288461    12.25414
+ t_2003_2006 |   15.39606   1.630036     9.45   0.000     12.20125    18.59087
+-------------+----------------------------------------------------------------
+g2005        |
+ t_2001_2002 |   -1.61823   .4340933    -3.73   0.000    -2.469037   -.7674225
+ t_2002_2003 |  -1.098766   .3916019    -2.81   0.005    -1.866291   -.3312403
+ t_2003_2004 |  -1.040585   .4685265    -2.22   0.026     -1.95888   -.1222894
+ t_2004_2005 |   8.960045   1.304222     6.87   0.000     6.403816    11.51627
+ t_2004_2006 |   18.17038   2.350583     7.73   0.000     13.56332    22.77744
+-------------+----------------------------------------------------------------
+g2006        |
+ t_2001_2002 |  -2.025243   .6580379    -3.08   0.002    -3.314973   -.7355122
+ t_2002_2003 |  -.4638174   .5404947    -0.86   0.391    -1.523168    .5955327
+ t_2003_2004 |  -1.618291   .6018767    -2.69   0.007    -2.797948   -.4386346
+ t_2004_2005 |  -1.532273   .7361928    -2.08   0.037    -2.975185    -.089362
+ t_2005_2006 |   1.908996   1.067153     1.79   0.074    -.1825848    4.000577
+------------------------------------------------------------------------------
+Control: Never Treated
+
+See Callaway and Sant'Anna (2020) for details
+
+. 
+. capture program drop did_staggered
+
+. 
+. program did_staggered, rclass
+  1. drop _all
+  2. 
+. set obs $nobs
+  3. gen id =_n
+  4. expand $tobs
+  5. 
+. bysort id: gen year =_n + 2000
+  6. gen f01 = year == 2001
+  7. gen f02 = year == 2002
+  8. gen f03 = year == 2003
+  9. gen f04 = year == 2004
+ 10. gen f05 = year == 2005
+ 11. gen f06 = year == 2006
+ 12. 
+. gen x0 = rgamma(1,1)
+ 13. egen x = mean(x0), by(id)
+ 14. 
+. gen c = rnormal(0,1)
+ 15. bysort id: replace c = c[1]
+ 16. 
+. * Add serial correlation in future.
+. gen u = rnormal(0,1)
+ 17. 
+. * Generate treatment cohorts:
+. 
+.         gen trt = -.5 + x/2 + rnormal(0,1) > 0
+ 18.         egen trt_sum = sum(trt), by(id)
+ 19.         gen dinf = trt_sum <= 2
+ 20.         gen d4 = trt_sum == 3
+ 21.         gen d5 = trt_sum == 4
+ 22.         gen d6 = trt_sum >= 5
+ 23.         drop trt trt_sum
+ 24.         
+.         sum dinf
+ 25.         return scalar dinf_p = r(mean)
+ 26.         sum d4
+ 27.         return scalar d4_p = r(mean)
+ 28.         sum d5
+ 29.         return scalar d5_p = r(mean)
+ 30.         sum d6
+ 31.         return scalar d6_p = r(mean)
+ 32. 
+. * Generate potential outcomes.
+. 
+.         gen yinfstar = 2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 - (d4 + d5 + d6) + c
+ 33.         gen yinf = rpoisson(exp(yinfstar))
+ 34.         gen y4 = yinf
+ 35.         replace y4 = rpoisson(exp(yinfstar + .5 + (x - 1)/5 + .4*f05 + .6*f06)) if year >= 2004
+ 36.         gen y5 = yinf
+ 37.         replace y5 = rpoisson(exp(yinfstar + .8 + (x - 1)/5 + .4*f06)) if year >= 2005
+ 38.         gen y6 = yinf
+ 39.         replace y6 = rpoisson(exp(yinfstar + .3 + (x - 1)/5)) if year >= 2006
+ 40. 
+. 
+. /*
+>         gen yinfstar = 2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 - (d4 + d5 + d6) + c
+>         gen yinf = exp(rnormal())*rpoisson(exp(yinfstar))
+>         gen y4 = yinf
+>         replace y4 = exp(rnormal())*rpoisson(exp(yinfstar + .5 + (x - 1)/5 + .4*f05 + .6*f06)) if year >= 2004
+>         gen y5 = yinf
+>         replace y5 = exp(rnormal())*rpoisson(exp(yinfstar + .8 + (x - 1)/5 + .4*f06)) if year >= 2005
+>         gen y6 = yinf
+>         replace y6 = exp(rnormal())*rpoisson(exp(yinfstar + .3 + (x - 1)/5)) if year >= 2006
+> */
+. 
+. /*
+>         gen yinfstar = .2 + .2*f02 + .3*f03 + .4*f04 + .5*f05 + .6*f06 + x/5 + c - (d4 + d5 + d6) + u
+>         gen yinf = rpoisson(1)*exp(yinfstar)
+>         gen y4 = yinf
+>         replace y4 = rpoisson(1)*exp(yinfstar + .1 + (x - 1)/5 + .2*f05 + .3*f06 + rnormal(0,1)) if year >= 2004
+>         gen y5 = yinf
+>         replace y5 = rpoisson(1)*exp(yinfstar + .3 + (x - 1)/5+ .2*f06 + rnormal(0,1)) if year >= 2005
+>         gen y6 = yinf
+>         replace y6 = rpoisson(1)*exp(yinfstar + .2 + (x - 1)/5 + rnormal(0,1)) if year >= 2006
+> */
+. 
+. 
+. 
+. 
+. 
+.         sum x if d4
+ 41.         gen x_dm4 = x - r(mean)
+ 42.         sum x if d5
+ 43.         gen x_dm5 = x - r(mean)
+ 44.         sum x if d6
+ 45.         gen x_dm6 = x - r(mean)
+ 46. 
+.         gen y = dinf*yinf + d4*y4 + d5*y5 + d6*y6
+ 47. 
+. * Generate time-varying treatment indicator for staggered intervention:
+.         gen w = d4*(f04 + f05 + f06) + d5*(f05 + f06) + d6*f06
+ 48. 
+.         xtset id year
+ 49. 
+.         gen te_4i = y4 - yinf
+ 50.         sum te_4i if d4 & f04
+ 51.         return scalar att_44 = r(mean)
+ 52.         sum te_4i if d4 & f05
+ 53.         return scalar att_45 = r(mean)
+ 54.         sum te_4i if d4 & f06
+ 55.         return scalar att_46 = r(mean)
+ 56. 
+.         gen te_5i = y5 - yinf
+ 57.         sum te_5i if d5 & f05
+ 58.         return scalar att_55 = r(mean)
+ 59.         sum te_5i if d5 & f06
+ 60.         return scalar att_56 = r(mean)
+ 61. 
+.         gen te_6i = y6 - yinf
+ 62.         sum te_6i if d6 & f06
+ 63.         return scalar att_66 = r(mean)
+ 64. 
+. * linear:
+. 
+. reg y c.d4#c.f04 c.d4#c.f05 c.d4#c.f06 ///
+>         c.d5#c.f05 c.d5#c.f06 ///
+>         c.d6#c.f06 ///
+>         c.d4#c.f04#c.x_dm4 c.d4#c.f05#c.x_dm4 c.d4#c.f06#c.x_dm4 ///
+>         c.d5#c.f05#c.x_dm5 c.d5#c.f06#c.x_dm5 ///
+>         c.d6#c.f06#c.x_dm6 ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d4 d5 d6 x c.d4#c.x c.d5#c.x c.d6#c.x
+ 65.         
+.         return scalar att_44_ra = _b[c.d4#c.f04]
+ 66.         return scalar att_45_ra = _b[c.d4#c.f05]
+ 67.         return scalar att_46_ra = _b[c.d4#c.f06]
+ 68.         return scalar att_55_ra = _b[c.d5#c.f05]
+ 69.         return scalar att_56_ra = _b[c.d5#c.f06]
+ 70.         return scalar att_66_ra = _b[c.d6#c.f06]
+ 71.         return scalar rsq = e(r2)
+ 72.         
+. * Poisson
+. 
+.         poisson y i.w#c.d4#c.f04 i.w#c.d4#c.f05 i.w#c.d4#c.f06 ///
+>         i.w#c.d5#c.f05 i.w#c.d5#c.f06 ///
+>         i.w#c.d6#c.f06 ///
+>         i.w#c.d4#c.f04#c.x i.w#c.d4#c.f05#c.x i.w#c.d4#c.f06#c.x ///
+>         i.w#c.d5#c.f05#c.x i.w#c.d5#c.f06#c.x ///
+>         i.w#c.d6#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d4 d5 d6 x c.d4#c.x c.d5#c.x c.d6#c.x
+ 73.         
+.         estimates store beta    
+ 74. 
+.         margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d4 == 1 & f04 == 1) noestimcheck post
+ 75.         return scalar att_44_po = _b[1.w]
+ 76.         
+.         estimates restore beta
+ 77.         margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d4 == 1 & f05 == 1) noestimcheck post
+ 78.         return scalar att_45_po = _b[1.w]
+ 79.         
+.         estimates restore beta
+ 80.         margins, dydx(w) at(d4 = 1 d5 = 0 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d4 == 1 & f06 == 1) noestimcheck post
+ 81.         return scalar att_46_po = _b[1.w]
+ 82.         
+.         estimates restore beta
+ 83.         margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d5 == 1 & f05 == 1) noestimcheck  post
+ 84.         return scalar att_55_po = _b[1.w]
+ 85.         
+.         estimates restore beta
+ 86.         margins, dydx(w) at(d4 = 0 d5 = 1 d6 = 0 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d5 == 1 & f06 == 1) noestimcheck post
+ 87.         return scalar att_56_po = _b[1.w]
+ 88.         
+.         estimates restore beta
+ 89.         margins, dydx(w) at(d4 = 0 d5 = 0 d6 = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d6 == 1 & f06 == 1) noestimcheck post
+ 90.         return scalar att_66_po = _b[1.w]
+ 91.         
+. * Callaway and Sant'Anna:
+. 
+.         gen first_treat = 0
+ 92.         replace first_treat = 2004 if d4
+ 93.         replace first_treat = 2005 if d5
+ 94.         replace first_treat = 2006 if d6
+ 95.         csdid y x, ivar(id) time(year) gvar(first_treat) method(dripw) reps(1)
+ 96.         return scalar att_44_cs = _b[g2004:t_2003_2004]
+ 97.         return scalar att_45_cs = _b[g2004:t_2003_2005]
+ 98.         return scalar att_46_cs = _b[g2004:t_2003_2006]
+ 99.         return scalar att_55_cs = _b[g2005:t_2004_2005]
+100.         return scalar att_56_cs = _b[g2005:t_2004_2006]
+101.         return scalar att_66_cs = _b[g2006:t_2005_2006]
+102.         
+. end
+
+. 
+. set seed 123
+
+. 
+. simulate r(att_44) r(att_45) r(att_46) ///
+>         r(att_55) r(att_56) r(att_66) ///
+>         r(att_44_ra) r(att_45_ra) r(att_46_ra) ///
+>         r(att_55_ra) r(att_56_ra) r(att_66_ra) ///
+>         r(att_44_po) r(att_45_po) r(att_46_po) ///
+>         r(att_55_po) r(att_56_po) r(att_66_po) ///
+>         r(att_44_cs) r(att_45_cs) r(att_46_cs) ///
+>         r(att_55_cs) r(att_56_cs) r(att_66_cs) ///
+>         r(rsq) r(dinf_p) r(d4_p) r(d5_p) r(d6_p), reps($iter): did_staggered
+
+      Command: did_staggered
+       _sim_1: r(att_44)
+       _sim_2: r(att_45)
+       _sim_3: r(att_46)
+       _sim_4: r(att_55)
+       _sim_5: r(att_56)
+       _sim_6: r(att_66)
+       _sim_7: r(att_44_ra)
+       _sim_8: r(att_45_ra)
+       _sim_9: r(att_46_ra)
+      _sim_10: r(att_55_ra)
+      _sim_11: r(att_56_ra)
+      _sim_12: r(att_66_ra)
+      _sim_13: r(att_44_po)
+      _sim_14: r(att_45_po)
+      _sim_15: r(att_46_po)
+      _sim_16: r(att_55_po)
+      _sim_17: r(att_56_po)
+      _sim_18: r(att_66_po)
+      _sim_19: r(att_44_cs)
+      _sim_20: r(att_45_cs)
+      _sim_21: r(att_46_cs)
+      _sim_22: r(att_55_cs)
+      _sim_23: r(att_56_cs)
+      _sim_24: r(att_66_cs)
+      _sim_25: r(rsq)
+      _sim_26: r(dinf_p)
+      _sim_27: r(d4_p)
+      _sim_28: r(d5_p)
+      _sim_29: r(d6_p)
+
+Simulations (1,000)
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+..................................................    50
+..................................................   100
+..................................................   150
+..................................................   200
+..................................................   250
+..................................................   300
+..................................................   350
+..................................................   400
+..................................................   450
+..................................................   500
+..................................................   550
+..................................................   600
+..................................................   650
+..................................................   700
+..................................................   750
+..................................................   800
+..................................................   850
+..................................................   900
+..................................................   950
+.................................................. 1,000
+
+.         
+. sum, sep(6)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      _sim_1 |      1,000    5.364539    .5194312   3.850993    7.32872
+      _sim_2 |      1,000    13.29947    1.138287   10.43158   17.85121
+      _sim_3 |      1,000    20.14068    1.666943   16.18246   26.60208
+      _sim_4 |      1,000    11.92475    1.088579   8.867842   18.89372
+      _sim_5 |      1,000    24.66043    2.174554   17.91549   38.09662
+      _sim_6 |      1,000    4.792345    .7846503   2.642277   9.486301
+-------------+---------------------------------------------------------
+      _sim_7 |      1,000    3.948408    .6593025   2.264202   6.323616
+      _sim_8 |      1,000    10.37073    1.388323   6.110936   15.51118
+      _sim_9 |      1,000    14.74181    2.054365   9.184963   22.10081
+     _sim_10 |      1,000    9.501892    1.307021   5.533414   17.69303
+     _sim_11 |      1,000    19.54272    2.550763   12.14962   34.69974
+     _sim_12 |      1,000   -.0000643    1.446866  -4.695029   6.342201
+-------------+---------------------------------------------------------
+     _sim_13 |      1,000    5.365797    .5087996   3.862761   7.265329
+     _sim_14 |      1,000    13.29866    1.131571   10.09348   18.01831
+     _sim_15 |      1,000    20.12859    1.654129   16.17537   26.80393
+     _sim_16 |      1,000    11.91796    1.087406   8.731894   18.83958
+     _sim_17 |      1,000    24.65548    2.163202   17.87916   38.08952
+     _sim_18 |      1,000    4.774505    .7714199    2.44978   8.962715
+-------------+---------------------------------------------------------
+     _sim_19 |      1,000     4.03501     .708016     1.7236   6.629955
+     _sim_20 |      1,000    10.47529    1.376731   6.331237   15.73385
+     _sim_21 |      1,000      15.669    1.984634   9.827185   22.87898
+     _sim_22 |      1,000    10.38224     1.29737   7.040552   17.93469
+     _sim_23 |      1,000    21.43709     2.44033   14.52207   36.16108
+     _sim_24 |      1,000    3.028298    1.374409  -2.702883   9.062642
+-------------+---------------------------------------------------------
+     _sim_25 |      1,000    .1275709    .0201692   .0410766   .1979194
+     _sim_26 |      1,000     .357616    .0150591       .314       .411
+     _sim_27 |      1,000     .291484    .0145963       .248       .335
+     _sim_28 |      1,000     .224685    .0137792       .176       .282
+     _sim_29 |      1,000     .126215    .0104283       .091        .16
+
+. 
+. /*
+> 
+>         r(att_44_cs) r(att_45_cs) r(att_46_cs) ///
+>         r(att_55_cs) r(att_56_cs) r(att_66_cs) ///
+>         
+> */
+.         
+. log close
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\simulations\did_staggered_poisson_20211110.log
+  log type:  text
+ closed on:  15 Nov 2021, 22:46:11
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

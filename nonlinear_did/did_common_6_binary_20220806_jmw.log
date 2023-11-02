@@ -1,0 +1,1455 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\stata_files\did_common_6_binary_20220806.log
+  log type:  text
+ opened on:   6 Aug 2022, 17:31:26
+
+. 
+. tab year
+
+       year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2001 |      1,000       16.67       16.67
+       2002 |      1,000       16.67       33.33
+       2003 |      1,000       16.67       50.00
+       2004 |      1,000       16.67       66.67
+       2005 |      1,000       16.67       83.33
+       2006 |      1,000       16.67      100.00
+------------+-----------------------------------
+      Total |      6,000      100.00
+
+. tab d if f06
+
+          d |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        618       61.80       61.80
+          1 |        382       38.20      100.00
+------------+-----------------------------------
+      Total |      1,000      100.00
+
+. tab y
+
+          y |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      3,468       57.80       57.80
+          1 |      2,532       42.20      100.00
+------------+-----------------------------------
+      Total |      6,000      100.00
+
+. 
+. * Because the data are generated, we can compute the sample ATTs. These 
+. * are unbiased for the population ATTs:
+. 
+. sum te_i if d & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        te_i |        382     .078534    .6054086         -1          1
+
+. sum te_i if d & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        te_i |        382     .117801    .6055278         -1          1
+
+. sum te_i if d & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        te_i |        382    .1099476    .6177221         -1          1
+
+. 
+. * Linear model, first without adjusting standard errors for xbar:
+. 
+. reg y c.d#c.f04 c.d#c.f05 c.d#c.f06 ///
+>         c.d#c.f04#c.x_dm c.d#c.f05#c.x_dm c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+Linear regression                               Number of obs     =      6,000
+                                                F(19, 999)        =      73.84
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1458
+                                                Root MSE          =     .45722
+
+                                     (Std. err. adjusted for 1,000 clusters in id)
+----------------------------------------------------------------------------------
+                 |               Robust
+               y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       c.d#c.f04 |   .0462206   .0367915     1.26   0.209    -.0259768    .1184181
+                 |
+       c.d#c.f05 |   .0755069   .0375981     2.01   0.045     .0017265    .1492873
+                 |
+       c.d#c.f06 |   .0445457   .0378681     1.18   0.240    -.0297645     .118856
+                 |
+c.d#c.f04#c.x_dm |  -.0185417   .0885739    -0.21   0.834    -.1923539    .1552704
+                 |
+c.d#c.f05#c.x_dm |   .0453048    .085807     0.53   0.598    -.1230779    .2136875
+                 |
+c.d#c.f06#c.x_dm |    .130662   .0841938     1.55   0.121    -.0345549    .2958789
+                 |
+             f02 |   .0009375   .0509461     0.02   0.985    -.0990362    .1009113
+             f03 |  -.0363479   .0531606    -0.68   0.494    -.1406672    .0679714
+             f04 |   .0227675   .0718298     0.32   0.751     -.118187    .1637221
+             f05 |   .0047325    .068471     0.07   0.945     -.129631    .1390961
+             f06 |    .132355   .0694451     1.91   0.057    -.0039201      .26863
+                 |
+       c.f02#c.x |  -.0118991   .0455013    -0.26   0.794    -.1011881    .0773899
+                 |
+       c.f03#c.x |   .0392213   .0484515     0.81   0.418    -.0558571    .1342997
+                 |
+       c.f04#c.x |   .0613781   .0705436     0.87   0.384    -.0770525    .1998087
+                 |
+       c.f05#c.x |   .0941201   .0663857     1.42   0.157    -.0361513    .2243914
+                 |
+       c.f06#c.x |   .0185686   .0705219     0.26   0.792    -.1198194    .1569567
+                 |
+               d |  -.3353013   .0434568    -7.72   0.000    -.4205783   -.2500243
+               x |   .1262778   .0447227     2.82   0.005     .0385166     .214039
+                 |
+         c.d#c.x |  -.0628457   .0421785    -1.49   0.137    -.1456143     .019923
+                 |
+           _cons |   .3866191   .0456444     8.47   0.000     .2970492    .4761891
+----------------------------------------------------------------------------------
+
+.                 
+. * Now adjust standard errors for xbar using the vce(uncon) option. Stata
+. * output looks better by including c.d in the treatment indicator:
+. 
+. reg y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.d#c.f04#c.x_dm i.w#c.d#c.d#c.f05#c.x_dm i.w#c.d#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x, noomitted vce(cluster id)
+note: 0b.w#c.d#c.f04 omitted because of collinearity.
+note: 0b.w#c.d#c.f05 omitted because of collinearity.
+note: 0b.w#c.d#c.f06 omitted because of collinearity.
+note: 0b.w#c.d#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.d#c.f06#c.x_dm omitted because of collinearity.
+
+Linear regression                               Number of obs     =      6,000
+                                                F(19, 999)        =      73.84
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1458
+                                                Root MSE          =     .45722
+
+                                           (Std. err. adjusted for 1,000 clusters in id)
+----------------------------------------------------------------------------------------
+                       |               Robust
+                     y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------------+----------------------------------------------------------------
+           w#c.d#c.f04 |
+                    1  |   .0462206   .0367915     1.26   0.209    -.0259768    .1184181
+                       |
+           w#c.d#c.f05 |
+                    1  |   .0755069   .0375981     2.01   0.045     .0017265    .1492873
+                       |
+           w#c.d#c.f06 |
+                    1  |   .0445457   .0378681     1.18   0.240    -.0297645     .118856
+                       |
+w#c.d#c.d#c.f04#c.x_dm |
+                    1  |  -.0185417   .0885739    -0.21   0.834    -.1923539    .1552704
+                       |
+w#c.d#c.d#c.f05#c.x_dm |
+                    1  |   .0453048    .085807     0.53   0.598    -.1230779    .2136875
+                       |
+w#c.d#c.d#c.f06#c.x_dm |
+                    1  |    .130662   .0841938     1.55   0.121    -.0345549    .2958789
+                       |
+                   f02 |   .0009375   .0509461     0.02   0.985    -.0990362    .1009113
+                   f03 |  -.0363479   .0531606    -0.68   0.494    -.1406672    .0679714
+                   f04 |   .0227675   .0718298     0.32   0.751     -.118187    .1637221
+                   f05 |   .0047325    .068471     0.07   0.945     -.129631    .1390961
+                   f06 |    .132355   .0694451     1.91   0.057    -.0039201      .26863
+                       |
+             c.f02#c.x |  -.0118991   .0455013    -0.26   0.794    -.1011881    .0773899
+                       |
+             c.f03#c.x |   .0392213   .0484515     0.81   0.418    -.0558571    .1342997
+                       |
+             c.f04#c.x |   .0613781   .0705436     0.87   0.384    -.0770525    .1998087
+                       |
+             c.f05#c.x |   .0941201   .0663857     1.42   0.157    -.0361513    .2243914
+                       |
+             c.f06#c.x |   .0185686   .0705219     0.26   0.792    -.1198194    .1569567
+                       |
+                     d |  -.3353013   .0434568    -7.72   0.000    -.4205783   -.2500243
+                     x |   .1262778   .0447227     2.82   0.005     .0385166     .214039
+                       |
+               c.d#c.x |  -.0628457   .0421785    -1.49   0.137    -.1456143     .019923
+                       |
+                 _cons |   .3866191   .0456444     8.47   0.000     .2970492    .4761891
+----------------------------------------------------------------------------------------
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0462206   .0367939     1.26   0.209    -.0259816    .1184228
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0755069   .0376124     2.01   0.045     .0016985    .1493153
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0445457   .0379857     1.17   0.241    -.0299952    .1190866
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. * Logit. Again, Stata output looks better by including c.d in the treatment 
+. * indicator even though it is redundant:
+. 
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.f06 ///
+>         i.w#c.d#c.f04#c.x_dm i.w#c.d#c.f05#c.x_dm i.w#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+Iteration 0:   log pseudolikelihood =  -4085.576  
+Iteration 1:   log pseudolikelihood = -3617.6705  
+Iteration 2:   log pseudolikelihood = -3609.2183  
+Iteration 3:   log pseudolikelihood = -3609.1668  
+Iteration 4:   log pseudolikelihood = -3609.1668  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(19) = 775.35
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.1668                       Pseudo R2     = 0.1166
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+       w#c.d#c.f04 |
+                1  |   .5515589   .1906962     2.89   0.004     .1778012    .9253166
+                   |
+       w#c.d#c.f05 |
+                1  |    .682489   .1947192     3.50   0.000     .3008464    1.064132
+                   |
+           w#c.f06 |
+                1  |   .5501054   .1958262     2.81   0.005     .1662931    .9339178
+                   |
+w#c.d#c.f04#c.x_dm |
+                1  |  -.3314924   .4347067    -0.76   0.446    -1.183502     .520517
+                   |
+w#c.d#c.f05#c.x_dm |
+                1  |  -.0874416    .423375    -0.21   0.836    -.9172413    .7423582
+                   |
+w#c.d#c.f06#c.x_dm |
+                1  |   .2483893   .4193698     0.59   0.554    -.5735604    1.070339
+                   |
+               f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+               f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+               f04 |   .0539743   .3137998     0.17   0.863    -.5610619    .6690106
+               f05 |  -.0386572   .3041224    -0.13   0.899    -.6347261    .5574118
+               f06 |   .4795352   .3138648     1.53   0.127    -.1356284    1.094699
+                   |
+         c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+                   |
+         c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+                   |
+         c.f04#c.x |   .2938375   .3180849     0.92   0.356    -.3295975    .9172724
+                   |
+         c.f05#c.x |   .4540765     .30813     1.47   0.141    -.1498472       1.058
+                   |
+         c.f06#c.x |   .1561729   .3322175     0.47   0.638    -.4949615    .8073073
+                   |
+                 d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+                 x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+                   |
+           c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071868
+                   |
+             _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+------------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. 
+. * Without c.d in the treatment indicator:
+.         
+. logit y i.w#c.f04 i.w#c.f05 i.w#c.f06 ///
+>         i.w#c.f04#c.x_dm i.w#c.f05#c.x_dm i.w#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+note: 1.w#c.f04#c.x_dm omitted because of collinearity.
+note: 1.w#c.f05#c.x_dm omitted because of collinearity.
+note: 1.w#c.f06#c.x_dm omitted because of collinearity.
+Iteration 0:   log pseudolikelihood =  -4085.576  
+Iteration 1:   log pseudolikelihood = -3617.6705  
+Iteration 2:   log pseudolikelihood = -3609.2183  
+Iteration 3:   log pseudolikelihood = -3609.1668  
+Iteration 4:   log pseudolikelihood = -3609.1668  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(19) = 775.35
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.1668                       Pseudo R2     = 0.1166
+
+                                   (Std. err. adjusted for 1,000 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+             y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+       w#c.f04 |
+            1  |   .5515589   .1906962     2.89   0.004     .1778012    .9253166
+               |
+       w#c.f05 |
+            1  |    .682489   .1947192     3.50   0.000     .3008464    1.064132
+               |
+       w#c.f06 |
+            1  |   .5501054   .1958262     2.81   0.005     .1662931    .9339178
+               |
+w#c.f04#c.x_dm |
+            0  |   .3314925   .4347067     0.76   0.446     -.520517    1.183502
+               |
+w#c.f05#c.x_dm |
+            0  |   .0874416    .423375     0.21   0.836    -.7423582    .9172414
+               |
+w#c.f06#c.x_dm |
+            0  |  -.2483893   .4193698    -0.59   0.554    -1.070339    .5735604
+               |
+           f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+           f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+           f04 |   .4436313   .4286741     1.03   0.301    -.3965545    1.283817
+           f05 |   .0641272   .4268243     0.15   0.881     -.772433    .9006873
+           f06 |   .1875629   .3951834     0.47   0.635    -.5869823    .9621082
+               |
+     c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+               |
+     c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+               |
+     c.f04#c.x |   -.037655    .355841    -0.11   0.916    -.7350906    .6597806
+               |
+     c.f05#c.x |   .3666349   .3521148     1.04   0.298    -.3234974    1.056767
+               |
+     c.f06#c.x |   .4045622   .3232564     1.25   0.211    -.2290087    1.038133
+               |
+             d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+             x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+               |
+       c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071869
+               |
+         _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+--------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. qui logit y i.w#c.f04 i.w#c.f05 i.w#c.f06 ///
+>         i.w#c.f04#c.x_dm i.w#c.f05#c.x_dm i.w#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. qui logit y i.w#c.f04 i.w#c.f05 i.w#c.f06 ///
+>         i.w#c.f04#c.x_dm i.w#c.f05#c.x_dm i.w#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         noestimcheck vce(uncond)
+
+Average marginal effects                                 Number of obs = 6,000
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0922312   .0298892     3.09   0.002     .0336494     .150813
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         noestimcheck vce(uncond)
+
+Average marginal effects                                 Number of obs = 6,000
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1149342   .0315715     3.64   0.000     .0530553    .1768131
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         noestimcheck vce(uncond)
+
+Average marginal effects                                 Number of obs = 6,000
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0930233   .0333519     2.79   0.005     .0276548    .1583918
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. * Logit estimates much closer to sample ATTs. More precise, too.
+. 
+. * Imputation gives same estimates:
+. 
+. logit y f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x if ~w, noomitted vce(cluster id)
+
+Iteration 0:   log pseudolikelihood = -3340.3661  
+Iteration 1:   log pseudolikelihood = -2932.7522  
+Iteration 2:   log pseudolikelihood = -2925.2121  
+Iteration 3:   log pseudolikelihood = -2925.1857  
+Iteration 4:   log pseudolikelihood = -2925.1857  
+
+Logistic regression                                     Number of obs =  4,854
+                                                        Wald chi2(13) = 614.61
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -2925.1857                       Pseudo R2     = 0.1243
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+         f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+         f04 |   .0539743   .3137998     0.17   0.863    -.5610619    .6690106
+         f05 |  -.0386572   .3041224    -0.13   0.899    -.6347261    .5574118
+         f06 |   .4795352   .3138648     1.53   0.127    -.1356284    1.094699
+             |
+   c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+             |
+   c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+             |
+   c.f04#c.x |   .2938375   .3180849     0.92   0.356    -.3295974    .9172724
+             |
+   c.f05#c.x |   .4540765     .30813     1.47   0.141    -.1498472       1.058
+             |
+   c.f06#c.x |   .1561729   .3322175     0.47   0.638    -.4949615    .8073073
+             |
+           d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+           x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+             |
+     c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071869
+             |
+       _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+------------------------------------------------------------------------------
+
+. 
+. predict double y0h
+(option pr assumed; Pr(y))
+
+. gen teyh = y - y0h
+
+. sum teyh if d & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .0886639     .440291   -.498095   .8977776
+
+. sum teyh if d & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .1217999    .4577212  -.5940483   .9066999
+
+. sum teyh if d & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .1073639    .4602771  -.4252031    .884614
+
+. 
+. 
+. * Callaway and Sant'Anna (2021, Journal of Econometrics):
+. 
+. gen first_treat = 0
+
+. replace first_treat = 2004 if d
+(2,292 real changes made)
+
+. csdid y x, ivar(id) time(year) gvar(first_treat)
+.....
+Difference-in-difference with Multiple Time Periods
+Outcome model  : 
+Treatment model: 
+------------------------------------------------------------------------------
+             | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+g2004        |
+ t_2001_2002 |   .0395675   .0423073     0.94   0.350    -.0433533    .1224884
+ t_2002_2003 |   -.009403   .0413075    -0.23   0.820    -.0903642    .0715583
+ t_2003_2004 |   .0278723   .0461201     0.60   0.546    -.0625215    .1182661
+ t_2003_2005 |   .0610949   .0457254     1.34   0.182    -.0285252     .150715
+ t_2003_2006 |   .0367104   .0448462     0.82   0.413    -.0511866    .1246074
+------------------------------------------------------------------------------
+Control: Never Treated
+
+See Callaway and Sant'Anna (2020) for details
+
+. 
+. * Like the linear model estimates, CS much smaller than the sample ATTs.
+. * Standard errors notably larger than logit.
+. 
+. * Test/adjust for failure of parallel trends.
+. * Estimated effects are much less precise:
+. 
+. * First the "event study" test:
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.f02 c.d#c.f03, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f06 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x omitted because of collinearity.
+Iteration 0:   log pseudolikelihood =  -4085.576  
+Iteration 1:   log pseudolikelihood = -3617.4484  
+Iteration 2:   log pseudolikelihood = -3608.9788  
+Iteration 3:   log pseudolikelihood = -3608.9269  
+Iteration 4:   log pseudolikelihood = -3608.9269  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(21) = 778.48
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3608.9269                       Pseudo R2     = 0.1167
+
+                                    (Std. err. adjusted for 1,000 clusters in id)
+---------------------------------------------------------------------------------
+                |               Robust
+              y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+    w#c.d#c.f04 |
+             1  |   1.037833   .5348099     1.94   0.052    -.0103746    2.086041
+                |
+    w#c.d#c.f05 |
+             1  |   .8818909   .5213894     1.69   0.091    -.1400135    1.903795
+                |
+    w#c.d#c.f06 |
+             1  |   .3547507   .5103974     0.70   0.487    -.6456097    1.355111
+                |
+w#c.d#c.f04#c.x |
+             1  |  -.3323547    .434619    -0.76   0.444    -1.184192    .5194829
+                |
+w#c.d#c.f05#c.x |
+             1  |  -.0883038   .4232726    -0.21   0.835    -.9179029    .7412953
+                |
+w#c.d#c.f06#c.x |
+             1  |   .2475271   .4193143     0.59   0.555    -.5743138    1.069368
+                |
+            f02 |   .0433018   .2588992     0.17   0.867    -.4641314    .5507349
+            f03 |   -.169913   .2652866    -0.64   0.522    -.6898651    .3500391
+            f04 |   .0684249   .3151542     0.22   0.828     -.549266    .6861157
+            f05 |  -.0242066   .3050025    -0.08   0.937    -.6220006    .5735874
+            f06 |   .4939858    .315723     1.56   0.118      -.12482    1.112792
+                |
+      c.f02#c.x |  -.1429392   .2624847    -0.54   0.586    -.6573996    .3715213
+                |
+      c.f03#c.x |    .168176   .2674111     0.63   0.529    -.3559401    .6922921
+                |
+      c.f04#c.x |   .2584808    .322693     0.80   0.423    -.3739858    .8909474
+                |
+      c.f05#c.x |   .4187199    .312317     1.34   0.180    -.1934101     1.03085
+                |
+      c.f06#c.x |   .1208162   .3386891     0.36   0.721    -.5430023    .7846348
+                |
+              d |  -2.282177   .3206046    -7.12   0.000     -2.91055   -1.653803
+              x |   .5402095   .2122694     2.54   0.011     .1241691    .9562499
+                |
+        c.d#c.x |   .0596954   .2284146     0.26   0.794    -.3879891    .5073799
+                |
+      c.d#c.f02 |   .1862341   .2797595     0.67   0.506    -.3620845    .7345527
+                |
+      c.d#c.f03 |    .099725   .2691279     0.37   0.711    -.4277561    .6272061
+                |
+          _cons |  -.4644518   .2067949    -2.25   0.025    -.8697624   -.0591412
+---------------------------------------------------------------------------------
+
+. test c.d#c.f02 c.d#c.f03
+
+ ( 1)  [y]c.d#c.f02 = 0
+ ( 2)  [y]c.d#c.f03 = 0
+
+           chi2(  2) =    0.44
+         Prob > chi2 =    0.8012
+
+. 
+. * Confirm get same as using only control observations:
+. logit y f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.f02 c.d#c.f03 if ~w, noomitted vce(cluster id)
+
+Iteration 0:   log pseudolikelihood = -3340.3661  
+Iteration 1:   log pseudolikelihood = -2932.5293  
+Iteration 2:   log pseudolikelihood = -2924.9727  
+Iteration 3:   log pseudolikelihood = -2924.9458  
+Iteration 4:   log pseudolikelihood = -2924.9458  
+
+Logistic regression                                     Number of obs =  4,854
+                                                        Wald chi2(15) = 616.85
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -2924.9458                       Pseudo R2     = 0.1244
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         f02 |   .0433018   .2588992     0.17   0.867    -.4641314    .5507349
+         f03 |   -.169913   .2652866    -0.64   0.522    -.6898651    .3500391
+         f04 |   .0684249   .3151542     0.22   0.828     -.549266    .6861157
+         f05 |  -.0242066   .3050025    -0.08   0.937    -.6220006    .5735874
+         f06 |   .4939858    .315723     1.56   0.118      -.12482    1.112792
+             |
+   c.f02#c.x |  -.1429392   .2624847    -0.54   0.586    -.6573996    .3715213
+             |
+   c.f03#c.x |    .168176   .2674111     0.63   0.529    -.3559401    .6922921
+             |
+   c.f04#c.x |   .2584808    .322693     0.80   0.423    -.3739858    .8909474
+             |
+   c.f05#c.x |   .4187199    .312317     1.34   0.180    -.1934101     1.03085
+             |
+   c.f06#c.x |   .1208162   .3386891     0.36   0.721    -.5430023    .7846348
+             |
+           d |  -2.282177   .3206046    -7.12   0.000     -2.91055   -1.653803
+           x |   .5402095   .2122694     2.54   0.011     .1241691    .9562499
+             |
+     c.d#c.x |   .0596954   .2284146     0.26   0.794    -.3879891    .5073799
+             |
+   c.d#c.f02 |   .1862341   .2797595     0.67   0.506    -.3620845    .7345527
+             |
+   c.d#c.f03 |    .099725   .2691279     0.37   0.711    -.4277561    .6272061
+             |
+       _cons |  -.4644518   .2067949    -2.25   0.025    -.8697624   -.0591412
+------------------------------------------------------------------------------
+
+. test c.d#c.f02 c.d#c.f03
+
+ ( 1)  [y]c.d#c.f02 = 0
+ ( 2)  [y]c.d#c.f03 = 0
+
+           chi2(  2) =    0.44
+         Prob > chi2 =    0.8012
+
+. 
+. 
+. * Heterogeneous trend test and compute ATTs with trend:
+. 
+. gen t = year - 2000
+
+. 
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.t, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f06 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x omitted because of collinearity.
+Iteration 0:   log pseudolikelihood =  -4085.576  
+Iteration 1:   log pseudolikelihood = -3617.6309  
+Iteration 2:   log pseudolikelihood = -3609.1517  
+Iteration 3:   log pseudolikelihood = -3609.0999  
+Iteration 4:   log pseudolikelihood = -3609.0999  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(20) = 774.94
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.0999                       Pseudo R2     = 0.1166
+
+                                    (Std. err. adjusted for 1,000 clusters in id)
+---------------------------------------------------------------------------------
+                |               Robust
+              y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+    w#c.d#c.f04 |
+             1  |   .8440117   .5780676     1.46   0.144      -.28898    1.977003
+                |
+    w#c.d#c.f05 |
+             1  |   .6393993   .6279006     1.02   0.309    -.5912633    1.870062
+                |
+    w#c.d#c.f06 |
+             1  |   .0635893   .7291451     0.09   0.931    -1.365509    1.492687
+                |
+w#c.d#c.f04#c.x |
+             1  |  -.3311716   .4346827    -0.76   0.446    -1.183134    .5207907
+                |
+w#c.d#c.f05#c.x |
+             1  |  -.0871208   .4233854    -0.21   0.837    -.9169408    .7426993
+                |
+w#c.d#c.f06#c.x |
+             1  |   .2487101   .4193473     0.59   0.553    -.5731955    1.070616
+                |
+            f02 |   .0233812   .2564817     0.09   0.927    -.4793136     .526076
+            f03 |  -.1696057   .2638673    -0.64   0.520    -.6867762    .3475648
+            f04 |   .0615649    .314404     0.20   0.845    -.5546557    .6777855
+            f05 |  -.0310666   .3044422    -0.10   0.919    -.6277623    .5656291
+            f06 |   .4871258   .3149085     1.55   0.122    -.1300836    1.104335
+                |
+      c.f02#c.x |  -.0931148   .2471558    -0.38   0.706    -.5775313    .3913017
+                |
+      c.f03#c.x |   .1677619   .2654272     0.63   0.527    -.3524658    .6879896
+                |
+      c.f04#c.x |   .2753831   .3207561     0.86   0.391    -.3532872    .9040535
+                |
+      c.f05#c.x |   .4356222   .3109157     1.40   0.161    -.1737615    1.045006
+                |
+      c.f06#c.x |   .1377186   .3365369     0.41   0.682    -.5218816    .7973188
+                |
+              d |  -2.283034   .3905848    -5.85   0.000    -3.048566   -1.517502
+              x |   .5233072    .208774     2.51   0.012     .1141177    .9324967
+                |
+        c.d#c.x |   .0585124   .2287954     0.26   0.798    -.3899184    .5069432
+                |
+        c.d#c.t |   .0486698     .13168     0.37   0.712    -.2094182    .3067579
+                |
+          _cons |  -.4575918   .2056414    -2.23   0.026    -.8606415   -.0545421
+---------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0 t = 4) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    t   = 4
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0744289   .0532989     1.40   0.163    -.0300351    .1788929
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0 t = 5) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    t   = 5
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0989249   .0751587     1.32   0.188    -.0483836    .2462333
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1 t = 6) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+    t   = 6
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0732969   .1037802     0.71   0.480    -.1301086    .2767025
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. drop y0h teyh
+
+. 
+. * Imputation with heterogeneous trend:
+.         
+. logit y f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.t if ~w, noomitted vce(cluster id)
+
+Iteration 0:   log pseudolikelihood = -3340.3661  
+Iteration 1:   log pseudolikelihood = -2932.7127  
+Iteration 2:   log pseudolikelihood = -2925.1456  
+Iteration 3:   log pseudolikelihood = -2925.1188  
+Iteration 4:   log pseudolikelihood = -2925.1188  
+
+Logistic regression                                     Number of obs =  4,854
+                                                        Wald chi2(14) = 614.46
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -2925.1188                       Pseudo R2     = 0.1243
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         f02 |   .0233812   .2564817     0.09   0.927    -.4793136     .526076
+         f03 |  -.1696057   .2638673    -0.64   0.520    -.6867762    .3475648
+         f04 |   .0615649    .314404     0.20   0.845    -.5546557    .6777855
+         f05 |  -.0310666   .3044422    -0.10   0.919    -.6277623    .5656291
+         f06 |   .4871258   .3149085     1.55   0.122    -.1300836    1.104335
+             |
+   c.f02#c.x |  -.0931148   .2471558    -0.38   0.706    -.5775313    .3913017
+             |
+   c.f03#c.x |   .1677619   .2654272     0.63   0.527    -.3524658    .6879896
+             |
+   c.f04#c.x |   .2753831   .3207561     0.86   0.391    -.3532872    .9040535
+             |
+   c.f05#c.x |   .4356222   .3109157     1.40   0.161    -.1737615    1.045006
+             |
+   c.f06#c.x |   .1377186   .3365369     0.41   0.682    -.5218816    .7973188
+             |
+           d |  -2.283034   .3905848    -5.85   0.000    -3.048566   -1.517502
+           x |   .5233072    .208774     2.51   0.012     .1141177    .9324967
+             |
+     c.d#c.x |   .0585124   .2287954     0.26   0.798    -.3899184    .5069432
+             |
+     c.d#c.t |   .0486698     .13168     0.37   0.712    -.2094182    .3067579
+             |
+       _cons |  -.4575918   .2056414    -2.23   0.026    -.8606415   -.0545421
+------------------------------------------------------------------------------
+
+. predict double y0h
+(option pr assumed; Pr(y))
+
+. gen teyh = y - y0h
+
+. sum teyh if d & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .0744289    .4403907  -.5221409   .8885208
+
+. sum teyh if d & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .0989249    .4574774  -.6284651    .893618
+
+. sum teyh if d & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .0732969    .4599217  -.4730929   .8632296
+
+.         
+. reg y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x_dm i.w#c.d#c.f05#c.x_dm i.w#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x c.d#c.f02 c.d#c.f03, noomitted vce(cluster id)
+note: 0b.w#c.d#c.f04 omitted because of collinearity.
+note: 0b.w#c.d#c.f05 omitted because of collinearity.
+note: 0b.w#c.d#c.f06 omitted because of collinearity.
+note: 0b.w#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+
+Linear regression                               Number of obs     =      6,000
+                                                F(21, 999)        =      67.11
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1459
+                                                Root MSE          =     .45728
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+       w#c.d#c.f04 |
+                1  |   .0608865    .041685     1.46   0.144    -.0209136    .1426866
+                   |
+       w#c.d#c.f05 |
+                1  |   .0901727   .0429422     2.10   0.036     .0059055      .17444
+                   |
+       w#c.d#c.f06 |
+                1  |   .0592116   .0440928     1.34   0.180    -.0273136    .1457367
+                   |
+w#c.d#c.f04#c.x_dm |
+                1  |  -.0185417   .0885887    -0.21   0.834     -.192383    .1552995
+                   |
+w#c.d#c.f05#c.x_dm |
+                1  |   .0453048   .0858214     0.53   0.598    -.1231061    .2137157
+                   |
+w#c.d#c.f06#c.x_dm |
+                1  |    .130662   .0842078     1.55   0.121    -.0345826    .2959065
+                   |
+               f02 |   .0012383   .0508261     0.02   0.981    -.0984999    .1009765
+               f03 |    -.03625    .053105    -0.68   0.495    -.1404601    .0679601
+               f04 |   .0229004   .0718356     0.32   0.750    -.1180655    .1638663
+               f05 |   .0048654   .0684645     0.07   0.943    -.1294852    .1392161
+               f06 |   .1324879     .06944     1.91   0.057    -.0037772     .268753
+                   |
+         c.f02#c.x |  -.0248381    .047857    -0.52   0.604    -.1187498    .0690737
+                   |
+         c.f03#c.x |   .0350099   .0498022     0.70   0.482    -.0627191    .1327388
+                   |
+         c.f04#c.x |   .0556613   .0707124     0.79   0.431    -.0831007    .1944232
+                   |
+         c.f05#c.x |   .0884032   .0664217     1.33   0.184    -.0419388    .2187453
+                   |
+         c.f06#c.x |   .0128518   .0711024     0.18   0.857    -.1266754     .152379
+                   |
+                 d |  -.3499671    .048526    -7.21   0.000    -.4451917   -.2547425
+                 x |   .1319946   .0453745     2.91   0.004     .0429543    .2210348
+                   |
+           c.d#c.x |  -.0628457   .0421856    -1.49   0.137    -.1456282    .0199368
+                   |
+         c.d#c.f02 |   .0331935   .0389011     0.85   0.394    -.0431438    .1095308
+                   |
+         c.d#c.f03 |    .010804   .0380574     0.28   0.777    -.0638776    .0854856
+                   |
+             _cons |   .3864862   .0456268     8.47   0.000     .2969508    .4760216
+------------------------------------------------------------------------------------
+
+. test c.d#c.f02 c.d#c.f03
+
+ ( 1)  c.d#c.f02 = 0
+ ( 2)  c.d#c.f03 = 0
+
+       F(  2,   999) =    0.38
+            Prob > F =    0.6841
+
+. 
+. * Linear with heterogeneous trend:
+.         
+. reg y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x_dm i.w#c.d#c.f05#c.x_dm i.w#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x c.d#c.t, noomitted vce(cluster id)
+note: 0b.w#c.d#c.f04 omitted because of collinearity.
+note: 0b.w#c.d#c.f05 omitted because of collinearity.
+note: 0b.w#c.d#c.f06 omitted because of collinearity.
+note: 0b.w#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0b.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+
+Linear regression                               Number of obs     =      6,000
+                                                F(20, 999)        =      70.15
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.1458
+                                                Root MSE          =     .45726
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+       w#c.d#c.f04 |
+                1  |   .0354166   .0543912     0.65   0.515    -.0713176    .1421508
+                   |
+       w#c.d#c.f05 |
+                1  |   .0593009   .0685802     0.86   0.387     -.075277    .1938787
+                   |
+       w#c.d#c.f06 |
+                1  |   .0229377   .0844464     0.27   0.786     -.142775    .1886504
+                   |
+w#c.d#c.f04#c.x_dm |
+                1  |  -.0185417   .0885813    -0.21   0.834    -.1923685     .155285
+                   |
+w#c.d#c.f05#c.x_dm |
+                1  |   .0453048   .0858142     0.53   0.598     -.123092    .2137016
+                   |
+w#c.d#c.f06#c.x_dm |
+                1  |    .130662   .0842008     1.55   0.121    -.0345687    .2958927
+                   |
+               f02 |   .0009865   .0509246     0.02   0.985    -.0989451     .100918
+               f03 |    -.03625   .0531006    -0.68   0.495    -.1404514    .0679514
+               f04 |   .0228165   .0718252     0.32   0.751    -.1181291    .1637621
+               f05 |   .0047815   .0684594     0.07   0.944    -.1295593    .1391222
+               f06 |   .1324039   .0694389     1.91   0.057    -.0038589    .2686668
+                   |
+         c.f02#c.x |  -.0140048   .0460222    -0.30   0.761     -.104316    .0763063
+                   |
+         c.f03#c.x |   .0350099   .0497981     0.70   0.482    -.0627109    .1327306
+                   |
+         c.f04#c.x |   .0592724   .0706101     0.84   0.401    -.0792887    .1978334
+                   |
+         c.f05#c.x |   .0920143   .0664505     1.38   0.166    -.0383843    .2224129
+                   |
+         c.f06#c.x |   .0164629   .0709377     0.23   0.817    -.1227411    .1556668
+                   |
+                 d |  -.3461053    .058208    -5.95   0.000    -.4603292   -.2318814
+                 x |   .1283835   .0451377     2.84   0.005     .0398079    .2169591
+                   |
+           c.d#c.x |  -.0628457    .042182    -1.49   0.137    -.1456213    .0199299
+                   |
+           c.d#c.t |    .005402   .0190271     0.28   0.777    -.0319357    .0427397
+                   |
+             _cons |   .3865702   .0456284     8.47   0.000     .2970317    .4761086
+------------------------------------------------------------------------------------
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0354166   .0544011     0.65   0.515    -.0713369    .1421701
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0593009   .0685643     0.86   0.387    -.0752457    .1938474
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0229377    .084425     0.27   0.786     -.142733    .1886084
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. * Test for violation of NA by including lead indicator:
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x_dm i.w#c.d#c.f05#c.x_dm i.w#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x F.w, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f06 omitted because of collinearity.
+note: 1.w#c.d#c.f06 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+note: 1.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+note: f06 omitted because of collinearity.
+note: c.f06#c.x omitted because of collinearity.
+Iteration 0:   log pseudolikelihood = -3367.8762  
+Iteration 1:   log pseudolikelihood = -2987.4507  
+Iteration 2:   log pseudolikelihood = -2979.1427  
+Iteration 3:   log pseudolikelihood = -2979.0868  
+Iteration 4:   log pseudolikelihood = -2979.0868  
+
+Logistic regression                                     Number of obs =  5,000
+                                                        Wald chi2(16) = 612.46
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -2979.0868                       Pseudo R2     = 0.1154
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+       w#c.d#c.f04 |
+                1  |   .5474673    .242924     2.25   0.024     .0713449     1.02359
+                   |
+       w#c.d#c.f05 |
+                1  |   .6783974   .2415811     2.81   0.005     .2049072    1.151888
+                   |
+w#c.d#c.f04#c.x_dm |
+                1  |  -.3314454   .4346583    -0.76   0.446     -1.18336    .5204692
+                   |
+w#c.d#c.f05#c.x_dm |
+                1  |  -.0873945   .4233083    -0.21   0.836    -.9170636    .7422745
+                   |
+               f02 |   .0159748   .2549318     0.06   0.950    -.4836824     .515632
+               f03 |    -.18433   .2627276    -0.70   0.483    -.6992667    .3306067
+               f04 |    .054306   .3137909     0.17   0.863    -.5607129     .669325
+               f05 |  -.0383255   .3040558    -0.13   0.900    -.6342639    .5576129
+                   |
+         c.f02#c.x |  -.0749806   .2420881    -0.31   0.757    -.5494646    .3995034
+                   |
+         c.f03#c.x |   .2030653   .2605879     0.78   0.436    -.3076775    .7138082
+                   |
+         c.f04#c.x |   .2930363   .3186848     0.92   0.358    -.3315743     .917647
+                   |
+         c.f05#c.x |   .4532754   .3090641     1.47   0.142     -.152479     1.05903
+                   |
+                 d |  -2.187608   .2957078    -7.40   0.000    -2.767184   -1.608031
+                 x |    .505654   .2047691     2.47   0.014     .1043139     .906994
+                   |
+           c.d#c.x |   .0587861    .228644     0.26   0.797    -.3893479    .5069202
+                   |
+                 w |
+               F1. |   .0061957   .2214109     0.03   0.978    -.4277617     .440153
+                   |
+             _cons |  -.4503329    .204624    -2.20   0.028    -.8513885   -.0492773
+------------------------------------------------------------------------------------
+
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\stata_files\did_common_6_binary_20220806.log
+  log type:  text
+ closed on:   6 Aug 2022, 17:31:33
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

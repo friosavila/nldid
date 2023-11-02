@@ -1,0 +1,1952 @@
+-----------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\Fernando\Desktop\nonlinear_did\did_common_6
+> _binary_20220806.log
+  log type:  text
+ opened on:  19 Oct 2023, 21:55:03
+
+. 
+. tab year
+
+       year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       2001 |      1,000       16.67       16.67
+       2002 |      1,000       16.67       33.33
+       2003 |      1,000       16.67       50.00
+       2004 |      1,000       16.67       66.67
+       2005 |      1,000       16.67       83.33
+       2006 |      1,000       16.67      100.00
+------------+-----------------------------------
+      Total |      6,000      100.00
+
+. tab d if f06
+
+          d |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        618       61.80       61.80
+          1 |        382       38.20      100.00
+------------+-----------------------------------
+      Total |      1,000      100.00
+
+. tab y
+
+          y |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      3,468       57.80       57.80
+          1 |      2,532       42.20      100.00
+------------+-----------------------------------
+      Total |      6,000      100.00
+
+. 
+. * Because the data are generated, we can compute the sample ATT
+> s. These 
+. * are unbiased for the population ATTs:
+. 
+. sum te_i if d & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min     
+>    Max
+-------------+---------------------------------------------------
+> ------
+        te_i |        382     .078534    .6054086         -1     
+>      1
+
+. sum te_i if d & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min     
+>    Max
+-------------+---------------------------------------------------
+> ------
+        te_i |        382     .117801    .6055278         -1     
+>      1
+
+. sum te_i if d & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min     
+>    Max
+-------------+---------------------------------------------------
+> ------
+        te_i |        382    .1099476    .6177221         -1     
+>      1
+
+. 
+. * Linear model, first without adjusting standard errors for xba
+> r:
+. 
+. reg y c.d#c.f04 c.d#c.f05 c.d#c.f06 ///
+>         c.d#c.f04#c.x_dm c.d#c.f05#c.x_dm c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+Linear regression                               Number of obs    
+>  =      6,000
+                                                F(19, 999)       
+>  =      73.84
+                                                Prob > F         
+>  =     0.0000
+                                                R-squared        
+>  =     0.1458
+                                                Root MSE         
+>  =     .45722
+
+                                 (Std. err. adjusted for 1,000 cl
+> usters in id)
+-----------------------------------------------------------------
+> -------------
+             |               Robust
+           y | Coefficient  std. err.      t    P>|t|     [95% co
+> n                                                              
+>  f. interval]
+-------------+---------------------------------------------------
+> -------------
+   c.d#c.f04 |   .0462206   .0367915     1.26   0.209    -.025976
+> 8                                                              
+>      .1184181
+             |
+   c.d#c.f05 |   .0755069   .0375981     2.01   0.045     .001726
+> 5                                                              
+>      .1492873
+             |
+   c.d#c.f06 |   .0445457   .0378681     1.18   0.240    -.029764
+> 5                                                              
+>       .118856
+             |
+   c.d#c.f04#|
+      c.x_dm |  -.0185417   .0885739    -0.21   0.834    -.192353
+> 9                                                              
+>      .1552704
+             |
+   c.d#c.f05#|
+      c.x_dm |   .0453048    .085807     0.53   0.598    -.123077
+> 9                                                              
+>      .2136875
+             |
+   c.d#c.f06#|
+      c.x_dm |    .130662   .0841938     1.55   0.121    -.034554
+> 9                                                              
+>      .2958789
+             |
+         f02 |   .0009375   .0509461     0.02   0.985    -.099036
+> 2                                                              
+>      .1009113
+         f03 |  -.0363479   .0531606    -0.68   0.494    -.140667
+> 2                                                              
+>      .0679714
+         f04 |   .0227675   .0718298     0.32   0.751     -.11818
+> 7                                                              
+>      .1637221
+         f05 |   .0047325    .068471     0.07   0.945     -.12963
+> 1                                                              
+>      .1390961
+         f06 |    .132355   .0694451     1.91   0.057    -.003920
+> 1                                                              
+>        .26863
+             |
+   c.f02#c.x |  -.0118991   .0455013    -0.26   0.794    -.101188
+> 1                                                              
+>      .0773899
+             |
+   c.f03#c.x |   .0392213   .0484515     0.81   0.418    -.055857
+> 1                                                              
+>      .1342997
+             |
+   c.f04#c.x |   .0613781   .0705436     0.87   0.384    -.077052
+> 5                                                              
+>      .1998087
+             |
+   c.f05#c.x |   .0941201   .0663857     1.42   0.157    -.036151
+> 3                                                              
+>      .2243914
+             |
+   c.f06#c.x |   .0185686   .0705219     0.26   0.792    -.119819
+> 4                                                              
+>      .1569567
+             |
+           d |  -.3353013   .0434568    -7.72   0.000    -.420578
+> 3                                                              
+>     -.2500243
+           x |   .1262778   .0447227     2.82   0.005     .038516
+> 6                                                              
+>       .214039
+             |
+     c.d#c.x |  -.0628457   .0421785    -1.49   0.137    -.145614
+> 3                                                              
+>       .019923
+             |
+       _cons |   .3866191   .0456444     8.47   0.000     .297049
+> 2                                                              
+>      .4761891
+-----------------------------------------------------------------
+> -------------
+
+.                 
+. * Now adjust standard errors for xbar using the vce(uncon) opti
+> on. Stata
+. * output looks better by including c.d in the treatment indicat
+> or:
+. 
+. reg y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.d#c.f04#c.x_dm i.w#c.d#c.d#c.f05#c.x_dm i.w#c
+> .d#c.d#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 ///
+>         c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+>         d x c.d#c.x, noomitted vce(cluster id)
+note: 0b.w#c.d#c.f04 omitted because of collinearity.
+note: 0b.w#c.d#c.f05 omitted because of collinearity.
+note: 0b.w#c.d#c.f06 omitted because of collinearity.
+note: 0b.w#c.d#c.d#c.f04#c.x_dm omitted because of
+      collinearity.
+note: 0b.w#c.d#c.d#c.f05#c.x_dm omitted because of
+      collinearity.
+note: 0b.w#c.d#c.d#c.f06#c.x_dm omitted because of
+      collinearity.
+
+Linear regression                               Number of obs    
+>  =      6,000
+                                                F(19, 999)       
+>  =      73.84
+                                                Prob > F         
+>  =     0.0000
+                                                R-squared        
+>  =     0.1458
+                                                Root MSE         
+>  =     .45722
+
+                                 (Std. err. adjusted for 1,000 cl
+> usters in id)
+-----------------------------------------------------------------
+> -------------
+             |               Robust
+           y | Coefficient  std. err.      t    P>|t|     [95% co
+> n                                                              
+>  f. interval]
+-------------+---------------------------------------------------
+> -------------
+ w#c.d#c.f04 |
+          1  |   .0462206   .0367915     1.26   0.209    -.025976
+> 8                                                              
+>      .1184181
+             |
+ w#c.d#c.f05 |
+          1  |   .0755069   .0375981     2.01   0.045     .001726
+> 5                                                              
+>      .1492873
+             |
+ w#c.d#c.f06 |
+          1  |   .0445457   .0378681     1.18   0.240    -.029764
+> 5                                                              
+>       .118856
+             |
+   w#c.d#c.d#|
+c.f04#c.x_dm |
+          1  |  -.0185417   .0885739    -0.21   0.834    -.192353
+> 9                                                              
+>      .1552704
+             |
+   w#c.d#c.d#|
+c.f05#c.x_dm |
+          1  |   .0453048    .085807     0.53   0.598    -.123077
+> 9                                                              
+>      .2136875
+             |
+   w#c.d#c.d#|
+c.f06#c.x_dm |
+          1  |    .130662   .0841938     1.55   0.121    -.034554
+> 9                                                              
+>      .2958789
+             |
+         f02 |   .0009375   .0509461     0.02   0.985    -.099036
+> 2                                                              
+>      .1009113
+         f03 |  -.0363479   .0531606    -0.68   0.494    -.140667
+> 2                                                              
+>      .0679714
+         f04 |   .0227675   .0718298     0.32   0.751     -.11818
+> 7                                                              
+>      .1637221
+         f05 |   .0047325    .068471     0.07   0.945     -.12963
+> 1                                                              
+>      .1390961
+         f06 |    .132355   .0694451     1.91   0.057    -.003920
+> 1                                                              
+>        .26863
+             |
+   c.f02#c.x |  -.0118991   .0455013    -0.26   0.794    -.101188
+> 1                                                              
+>      .0773899
+             |
+   c.f03#c.x |   .0392213   .0484515     0.81   0.418    -.055857
+> 1                                                              
+>      .1342997
+             |
+   c.f04#c.x |   .0613781   .0705436     0.87   0.384    -.077052
+> 5                                                              
+>      .1998087
+             |
+   c.f05#c.x |   .0941201   .0663857     1.42   0.157    -.036151
+> 3                                                              
+>      .2243914
+             |
+   c.f06#c.x |   .0185686   .0705219     0.26   0.792    -.119819
+> 4                                                              
+>      .1569567
+             |
+           d |  -.3353013   .0434568    -7.72   0.000    -.420578
+> 3                                                              
+>     -.2500243
+           x |   .1262778   .0447227     2.82   0.005     .038516
+> 6                                                              
+>       .214039
+             |
+     c.d#c.x |  -.0628457   .0421785    -1.49   0.137    -.145614
+> 3                                                              
+>       .019923
+             |
+       _cons |   .3866191   .0456444     8.47   0.000     .297049
+> 2                                                              
+>      .4761891
+-----------------------------------------------------------------
+> -------------
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) //
+> /
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of 
+> obs                                                            
+>       = 6,000
+                                                       Subpop. no
+> . obs                                                          
+>       = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 cl
+> usters in id)
+-----------------------------------------------------------------
+> -------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% co
+> n                                                              
+>  f. interval]
+-------------+---------------------------------------------------
+> -------------
+         1.w |   .0462206   .0367939     1.26   0.209    -.025981
+> 6                                                              
+>      .1184228
+-----------------------------------------------------------------
+> -------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) //
+> /
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of 
+> obs                                                            
+>       = 6,000
+                                                       Subpop. no
+> . obs                                                          
+>       = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 cl
+> usters in id)
+-----------------------------------------------------------------
+> -------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% co
+> n                                                              
+>  f. interval]
+-------------+---------------------------------------------------
+> -------------
+         1.w |   .0755069   .0376124     2.01   0.045     .001698
+> 5                                                              
+>      .1493153
+-----------------------------------------------------------------
+> -------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) //
+> /
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of 
+> obs                                                            
+>       = 6,000
+                                                       Subpop. no
+> . obs                                                          
+>       = 2,292
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 cl
+> usters in id)
+-----------------------------------------------------------------
+> -------------
+             |            Unconditional
+             |      dy/dx   std. err.      t    P>|t|     [95% co
+> n                                                              
+>  f. interval]
+-------------+---------------------------------------------------
+> -------------
+         1.w |   .0445457   .0379857     1.17   0.241    -.029995
+> 2                                                              
+>      .1190866
+-----------------------------------------------------------------
+> -------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. * Logit. Again, Stata output looks better by including c.d in t
+> he treatment 
+. * indicator even though it is redundant:
+. 
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.f06 ///
+>         i.w#c.d#c.f04#c.x_dm i.w#c.d#c.f05#c.x_dm i.w#c.d#c.f06
+> #c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05
+> #c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x_dm omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x_dm omitted because of collinearity.
+Iteration 0:  Log pseudolikelihood =  -4085.576  
+Iteration 1:  Log pseudolikelihood = -3617.6705  
+Iteration 2:  Log pseudolikelihood = -3609.2183  
+Iteration 3:  Log pseudolikelihood = -3609.1668  
+Iteration 4:  Log pseudolikelihood = -3609.1668  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(19) = 775.35
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.1668                       Pseudo R2     = 0.1166
+
+                                       (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------------
+                   |               Robust
+                 y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+       w#c.d#c.f04 |
+                1  |   .5515589   .1906962     2.89   0.004     .1778012    .9253166
+                   |
+       w#c.d#c.f05 |
+                1  |    .682489   .1947192     3.50   0.000     .3008464    1.064132
+                   |
+           w#c.f06 |
+                1  |   .5501054   .1958262     2.81   0.005     .1662931    .9339178
+                   |
+w#c.d#c.f04#c.x_dm |
+                1  |  -.3314924   .4347067    -0.76   0.446    -1.183502     .520517
+                   |
+w#c.d#c.f05#c.x_dm |
+                1  |  -.0874416    .423375    -0.21   0.836    -.9172413    .7423582
+                   |
+w#c.d#c.f06#c.x_dm |
+                1  |   .2483893   .4193698     0.59   0.554    -.5735604    1.070339
+                   |
+               f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+               f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+               f04 |   .0539743   .3137998     0.17   0.863    -.5610619    .6690106
+               f05 |  -.0386572   .3041224    -0.13   0.899    -.6347261    .5574118
+               f06 |   .4795352   .3138648     1.53   0.127    -.1356284    1.094699
+                   |
+         c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+                   |
+         c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+                   |
+         c.f04#c.x |   .2938375   .3180849     0.92   0.356    -.3295975    .9172724
+                   |
+         c.f05#c.x |   .4540765     .30813     1.47   0.141    -.1498472       1.058
+                   |
+         c.f06#c.x |   .1561729   .3322175     0.47   0.638    -.4949615    .8073073
+                   |
+                 d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+                 x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+                   |
+           c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071868
+                   |
+             _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+------------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. 
+end of do-file
+
+. egen gvar=csgvar(w), ivar(id) tvar(year)
+
+. tab year gvar
+
+           | Group Variable based
+           |        on w   
+      year |         0       2004 |     Total
+-----------+----------------------+----------
+      2001 |       618        382 |     1,000 
+      2002 |       618        382 |     1,000 
+      2003 |       618        382 |     1,000 
+      2004 |       618        382 |     1,000 
+      2005 |       618        382 |     1,000 
+      2006 |       618        382 |     1,000 
+-----------+----------------------+----------
+     Total |     3,708      2,292 |     6,000 
+
+. jwdid y x, ivar(id) gvar(xx) tvar(year)
+variable xx not found
+(error in option gvar())
+r(111);
+
+. jwdid y x, ivar(id) gvar(gvar) tvar(year)
+WARNING: Singleton observations not dropped; statistical significance is biased (link)
+(MWFE estimator converged in 2 iterations)
+note: 2006.year#c.x omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      6,000
+Absorbing 2 HDFE groups                           F(  11,    999) =       2.19
+Statistics robust to heteroskedasticity           Prob > F        =     0.0132
+                                                  R-squared       =     0.2964
+                                                  Adj R-squared   =     0.1529
+                                                  Within R-sq.    =     0.0043
+Number of clusters (id)      =      1,000         Root MSE        =     0.4546
+
+                                              (Std. err. adjusted for 1,000 clusters in id)
+-------------------------------------------------------------------------------------------
+                          |               Robust
+                        y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+--------------------------+----------------------------------------------------------------
+       gvar#year#c.__tr__ |
+               2004 2004  |   .0462206   .0367822     1.26   0.209    -.0259587       .1184
+               2004 2005  |   .0755069   .0375887     2.01   0.045      .001745    .1492688
+               2004 2006  |   .0445457   .0378587     1.18   0.240    -.0297459    .1188373
+                          |
+gvar#year#c.__tr__#c._x_x |
+               2004 2004  |  -.0185417   .0885517    -0.21   0.834    -.1923104    .1552269
+               2004 2005  |   .0453048   .0857855     0.53   0.598    -.1230357    .2136453
+               2004 2006  |    .130662   .0841726     1.55   0.121    -.0345135    .2958375
+                          |
+                 year#c.x |
+                    2001  |  -.0185686   .0705042    -0.26   0.792     -.156922    .1197847
+                    2002  |  -.0304677   .0702438    -0.43   0.665      -.16831    .1073746
+                    2003  |   .0206527   .0685956     0.30   0.763    -.1139554    .1552608
+                    2004  |   .0428095   .0786424     0.54   0.586    -.1115138    .1971328
+                    2005  |   .0755514   .0766591     0.99   0.325    -.0748799    .2259828
+                    2006  |          0  (omitted)
+                          |
+                    _cons |   .3963693   .0524248     7.56   0.000     .2934939    .4992448
+-------------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+          id |      1000        1000           0    *|
+        year |         6           0           6     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. jwdid y x, ivar(id) gvar(gvar) tvar(year) method(logit)
+
+Iteration 0:  Log pseudolikelihood =  -4085.576  
+Iteration 1:  Log pseudolikelihood = -3617.6705  
+Iteration 2:  Log pseudolikelihood = -3609.2183  
+Iteration 3:  Log pseudolikelihood = -3609.1668  
+Iteration 4:  Log pseudolikelihood = -3609.1668  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(19) = 775.35
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.1668                       Pseudo R2     = 0.1166
+
+                                              (Std. err. adjusted for 1,000 clusters in id)
+-------------------------------------------------------------------------------------------
+                          |               Robust
+                        y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+--------------------------+----------------------------------------------------------------
+       gvar#year#c.__tr__ |
+               2004 2004  |   .5515589   .1906962     2.89   0.004     .1778012    .9253166
+               2004 2005  |    .682489   .1947192     3.50   0.000     .3008464    1.064132
+               2004 2006  |   .5501054   .1958262     2.81   0.005     .1662931    .9339178
+                          |
+gvar#year#c.__tr__#c._x_x |
+               2004 2004  |  -.3314925   .4347067    -0.76   0.446    -1.183502     .520517
+               2004 2005  |  -.0874416    .423375    -0.21   0.836    -.9172414    .7423582
+               2004 2006  |   .2483893   .4193698     0.59   0.554    -.5735604    1.070339
+                          |
+                        x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+                          |
+                 gvar#c.x |
+                    2004  |   .0588332   .2287561     0.26   0.797    -.3895205    .5071869
+                          |
+                 year#c.x |
+                    2002  |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+                    2003  |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+                    2004  |   .2938375   .3180849     0.92   0.356    -.3295974    .9172724
+                    2005  |   .4540765     .30813     1.47   0.141    -.1498472       1.058
+                    2006  |   .1561729   .3322175     0.47   0.638    -.4949615    .8073073
+                          |
+                     gvar |
+                    2004  |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+                          |
+                     year |
+                    2002  |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+                    2003  |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+                    2004  |   .0539743   .3137998     0.17   0.863    -.5610619    .6690106
+                    2005  |  -.0386572   .3041224    -0.13   0.899    -.6347261    .5574118
+                    2006  |   .4795352   .3138648     1.53   0.127    -.1356284    1.094699
+                          |
+                    _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+-------------------------------------------------------------------------------------------
+
+. estat event
+------------------------------------------------------------------------------
+             |            Delta-method
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __event__ |
+          0  |   .0886639   .0326915     2.71   0.007     .0245898     .152738
+          1  |   .1217999   .0355628     3.42   0.001      .052098    .1915017
+          2  |   .1073639     .03708     2.90   0.004     .0346884    .1800394
+------------------------------------------------------------------------------
+
+. estat event, vce(unconditional)
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __event__ |
+          0  |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+          1  |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+          2  |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. logit y i.w#c.f04 i.w#c.f05 i.w#c.f06 ///
+>         i.w#c.f04#c.x_dm i.w#c.f05#c.x_dm i.w#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+note: 1.w#c.f04#c.x_dm omitted because of collinearity.
+note: 1.w#c.f05#c.x_dm omitted because of collinearity.
+note: 1.w#c.f06#c.x_dm omitted because of collinearity.
+Iteration 0:  Log pseudolikelihood =  -4085.576  
+Iteration 1:  Log pseudolikelihood = -3617.6705  
+Iteration 2:  Log pseudolikelihood = -3609.2183  
+Iteration 3:  Log pseudolikelihood = -3609.1668  
+Iteration 4:  Log pseudolikelihood = -3609.1668  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(19) = 775.35
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.1668                       Pseudo R2     = 0.1166
+
+                                   (Std. err. adjusted for 1,000 clusters in id)
+--------------------------------------------------------------------------------
+               |               Robust
+             y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+       w#c.f04 |
+            1  |   .5515589   .1906962     2.89   0.004     .1778012    .9253166
+               |
+       w#c.f05 |
+            1  |    .682489   .1947192     3.50   0.000     .3008464    1.064132
+               |
+       w#c.f06 |
+            1  |   .5501054   .1958262     2.81   0.005     .1662931    .9339178
+               |
+w#c.f04#c.x_dm |
+            0  |   .3314925   .4347067     0.76   0.446     -.520517    1.183502
+               |
+w#c.f05#c.x_dm |
+            0  |   .0874416    .423375     0.21   0.836    -.7423582    .9172414
+               |
+w#c.f06#c.x_dm |
+            0  |  -.2483893   .4193698    -0.59   0.554    -1.070339    .5735604
+               |
+           f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+           f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+           f04 |   .4436313   .4286741     1.03   0.301    -.3965545    1.283817
+           f05 |   .0641272   .4268243     0.15   0.881     -.772433    .9006873
+           f06 |   .1875629   .3951834     0.47   0.635    -.5869823    .9621082
+               |
+     c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+               |
+     c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+               |
+     c.f04#c.x |   -.037655    .355841    -0.11   0.916    -.7350906    .6597806
+               |
+     c.f05#c.x |   .3666349   .3521148     1.04   0.298    -.3234974    1.056767
+               |
+     c.f06#c.x |   .4045622   .3232564     1.25   0.211    -.2290087    1.038133
+               |
+             d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+             x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+               |
+       c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071869
+               |
+         _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+--------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+    d   = 1
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. 
+end of do-file
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+.         
+. qui logit y i.w#c.f04 i.w#c.f05 i.w#c.f06 ///
+>         i.w#c.f04#c.x_dm i.w#c.f05#c.x_dm i.w#c.f06#c.x_dm ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x, noomitted vce(cluster id)
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. 
+end of do-file
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. logit y f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x if ~w, noomitted vce(cluster id)
+
+Iteration 0:  Log pseudolikelihood = -3340.3661  
+Iteration 1:  Log pseudolikelihood = -2932.7522  
+Iteration 2:  Log pseudolikelihood = -2925.2121  
+Iteration 3:  Log pseudolikelihood = -2925.1857  
+Iteration 4:  Log pseudolikelihood = -2925.1857  
+
+Logistic regression                                     Number of obs =  4,854
+                                                        Wald chi2(13) = 614.61
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -2925.1857                       Pseudo R2     = 0.1243
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         f02 |   .0159557    .254879     0.06   0.950    -.4835981    .5155094
+         f03 |  -.1853553   .2622365    -0.71   0.480    -.6993293    .3286188
+         f04 |   .0539743   .3137998     0.17   0.863    -.5610619    .6690106
+         f05 |  -.0386572   .3041224    -0.13   0.899    -.6347261    .5574118
+         f06 |   .4795352   .3138648     1.53   0.127    -.1356284    1.094699
+             |
+   c.f02#c.x |  -.0749433   .2420313    -0.31   0.757     -.549316    .3994294
+             |
+   c.f03#c.x |   .2054979   .2502045     0.82   0.411     -.284894    .6958897
+             |
+   c.f04#c.x |   .2938375   .3180849     0.92   0.356    -.3295974    .9172724
+             |
+   c.f05#c.x |   .4540765     .30813     1.47   0.141    -.1498472       1.058
+             |
+   c.f06#c.x |   .1561729   .3322175     0.47   0.638    -.4949615    .8073073
+             |
+           d |  -2.185559   .2805608    -7.79   0.000    -2.735448    -1.63567
+           x |   .5048528   .2036075     2.48   0.013     .1057896    .9039161
+             |
+     c.d#c.x |   .0588332   .2287561     0.26   0.797    -.3895205    .5071869
+             |
+       _cons |  -.4500012   .2046174    -2.20   0.028    -.8510439   -.0489586
+------------------------------------------------------------------------------
+
+. 
+. predict double y0h
+(option pr assumed; Pr(y))
+
+. gen teyh = y - y0h
+
+. sum teyh if d & f04
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .0886639     .440291   -.498095   .8977776
+
+. sum teyh if d & f05
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .1217999    .4577212  -.5940483   .9066999
+
+. sum teyh if d & f06
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        teyh |        382    .1073639    .4602771  -.4252031    .884614
+
+. 
+end of do-file
+
+. jwdid y x, ivar(id) gvar(gvar) tvar(year)
+WARNING: Singleton observations not dropped; statistical significance is biased (link)
+(MWFE estimator converged in 2 iterations)
+note: 2006.year#c.x omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      6,000
+Absorbing 2 HDFE groups                           F(  11,    999) =       2.19
+Statistics robust to heteroskedasticity           Prob > F        =     0.0132
+                                                  R-squared       =     0.2964
+                                                  Adj R-squared   =     0.1529
+                                                  Within R-sq.    =     0.0043
+Number of clusters (id)      =      1,000         Root MSE        =     0.4546
+
+                                              (Std. err. adjusted for 1,000 clusters in id)
+-------------------------------------------------------------------------------------------
+                          |               Robust
+                        y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+--------------------------+----------------------------------------------------------------
+       gvar#year#c.__tr__ |
+               2004 2004  |   .0462206   .0367822     1.26   0.209    -.0259587       .1184
+               2004 2005  |   .0755069   .0375887     2.01   0.045      .001745    .1492688
+               2004 2006  |   .0445457   .0378587     1.18   0.240    -.0297459    .1188373
+                          |
+gvar#year#c.__tr__#c._x_x |
+               2004 2004  |  -.0185417   .0885517    -0.21   0.834    -.1923104    .1552269
+               2004 2005  |   .0453048   .0857855     0.53   0.598    -.1230357    .2136453
+               2004 2006  |    .130662   .0841726     1.55   0.121    -.0345135    .2958375
+                          |
+                 year#c.x |
+                    2001  |  -.0185686   .0705042    -0.26   0.792     -.156922    .1197847
+                    2002  |  -.0304677   .0702438    -0.43   0.665      -.16831    .1073746
+                    2003  |   .0206527   .0685956     0.30   0.763    -.1139554    .1552608
+                    2004  |   .0428095   .0786424     0.54   0.586    -.1115138    .1971328
+                    2005  |   .0755514   .0766591     0.99   0.325    -.0748799    .2259828
+                    2006  |          0  (omitted)
+                          |
+                    _cons |   .3963693   .0524248     7.56   0.000     .2934939    .4992448
+-------------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+          id |      1000        1000           0    *|
+        year |         6           0           6     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. gen first_treat = 0
+
+. 
+. replace first_treat = 2004 if d
+(2,292 real changes made)
+
+. 
+. csdid2 y x, ivar(id) time(year) gvar(first_treat) agg(attgt)
+Producing Long Gaps by default
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+.....
+Difference-in-difference with Multiple Time Periods
+Outcome model  : least squares
+Treatment model: inverse probability
+------------------------------------------------------------------------------
+             |               Robust
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+  t2001_2003 |  -.0300792    .042493    -0.71   0.479     -.113364    .0532056
+  t2002_2003 |   .0099261   .0413119     0.24   0.810    -.0710437     .090896
+  t2003_2004 |   .0277321    .046341     0.60   0.550    -.0630946    .1185588
+  t2003_2005 |   .0610427   .0458433     1.33   0.183    -.0288084    .1508938
+  t2003_2006 |   .0368024   .0448077     0.82   0.411     -.051019    .1246239
+------------------------------------------------------------------------------
+
+. csdid2 y x, ivar(id) time(year) gvar(first_treat) agg(attgt)
+Producing Long Gaps by default
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+.....
+Difference-in-difference with Multiple Time Periods
+Outcome model  : least squares
+Treatment model: inverse probability
+------------------------------------------------------------------------------
+             |               Robust
+             | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+  t2001_2003 |  -.0300792    .042493    -0.71   0.479     -.113364    .0532056
+  t2002_2003 |   .0099261   .0413119     0.24   0.810    -.0710437     .090896
+  t2003_2004 |   .0277321    .046341     0.60   0.550    -.0630946    .1185588
+  t2003_2005 |   .0610427   .0458433     1.33   0.183    -.0288084    .1508938
+  t2003_2006 |   .0368024   .0448077     0.82   0.411     -.051019    .1246239
+------------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.f02 c.d#c.f03, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f06 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x omitted because of collinearity.
+Iteration 0:  Log pseudolikelihood =  -4085.576  
+Iteration 1:  Log pseudolikelihood = -3617.4484  
+Iteration 2:  Log pseudolikelihood = -3608.9788  
+Iteration 3:  Log pseudolikelihood = -3608.9269  
+Iteration 4:  Log pseudolikelihood = -3608.9269  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(21) = 778.48
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3608.9269                       Pseudo R2     = 0.1167
+
+                                    (Std. err. adjusted for 1,000 clusters in id)
+---------------------------------------------------------------------------------
+                |               Robust
+              y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+    w#c.d#c.f04 |
+             1  |   1.037833   .5348099     1.94   0.052    -.0103746    2.086041
+                |
+    w#c.d#c.f05 |
+             1  |   .8818909   .5213894     1.69   0.091    -.1400135    1.903795
+                |
+    w#c.d#c.f06 |
+             1  |   .3547507   .5103974     0.70   0.487    -.6456097    1.355111
+                |
+w#c.d#c.f04#c.x |
+             1  |  -.3323547    .434619    -0.76   0.444    -1.184192    .5194829
+                |
+w#c.d#c.f05#c.x |
+             1  |  -.0883038   .4232726    -0.21   0.835    -.9179029    .7412953
+                |
+w#c.d#c.f06#c.x |
+             1  |   .2475271   .4193143     0.59   0.555    -.5743138    1.069368
+                |
+            f02 |   .0433018   .2588992     0.17   0.867    -.4641314    .5507349
+            f03 |   -.169913   .2652866    -0.64   0.522    -.6898651    .3500391
+            f04 |   .0684249   .3151542     0.22   0.828     -.549266    .6861157
+            f05 |  -.0242066   .3050025    -0.08   0.937    -.6220006    .5735874
+            f06 |   .4939858    .315723     1.56   0.118      -.12482    1.112792
+                |
+      c.f02#c.x |  -.1429392   .2624847    -0.54   0.586    -.6573996    .3715213
+                |
+      c.f03#c.x |    .168176   .2674111     0.63   0.529    -.3559401    .6922921
+                |
+      c.f04#c.x |   .2584808    .322693     0.80   0.423    -.3739858    .8909474
+                |
+      c.f05#c.x |   .4187199    .312317     1.34   0.180    -.1934101     1.03085
+                |
+      c.f06#c.x |   .1208162   .3386891     0.36   0.721    -.5430023    .7846348
+                |
+              d |  -2.282177   .3206046    -7.12   0.000     -2.91055   -1.653803
+              x |   .5402095   .2122694     2.54   0.011     .1241691    .9562499
+                |
+        c.d#c.x |   .0596954   .2284146     0.26   0.794    -.3879891    .5073799
+                |
+      c.d#c.f02 |   .1862341   .2797595     0.67   0.506    -.3620845    .7345527
+                |
+      c.d#c.f03 |    .099725   .2691279     0.37   0.711    -.4277561    .6272061
+                |
+          _cons |  -.4644518   .2067949    -2.25   0.025    -.8697624   -.0591412
+---------------------------------------------------------------------------------
+
+. test c.d#c.f02 c.d#c.f03
+
+ ( 1)  [y]c.d#c.f02 = 0
+ ( 2)  [y]c.d#c.f03 = 0
+
+           chi2(  2) =    0.44
+         Prob > chi2 =    0.8012
+
+. 
+end of do-file
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. 
+. gen t = year - 2000
+
+. 
+. logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+>         i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+>         f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+>         d x c.d#c.x c.d#c.t, noomitted vce(cluster id)
+
+note: 0.w#c.d#c.f04 omitted because of collinearity.
+note: 0.w#c.d#c.f05 omitted because of collinearity.
+note: 0.w#c.d#c.f06 omitted because of collinearity.
+note: 0.w#c.d#c.f04#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f05#c.x omitted because of collinearity.
+note: 0.w#c.d#c.f06#c.x omitted because of collinearity.
+Iteration 0:  Log pseudolikelihood =  -4085.576  
+Iteration 1:  Log pseudolikelihood = -3617.6309  
+Iteration 2:  Log pseudolikelihood = -3609.1517  
+Iteration 3:  Log pseudolikelihood = -3609.0999  
+Iteration 4:  Log pseudolikelihood = -3609.0999  
+
+Logistic regression                                     Number of obs =  6,000
+                                                        Wald chi2(20) = 774.94
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -3609.0999                       Pseudo R2     = 0.1166
+
+                                    (Std. err. adjusted for 1,000 clusters in id)
+---------------------------------------------------------------------------------
+                |               Robust
+              y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+    w#c.d#c.f04 |
+             1  |   .8440117   .5780676     1.46   0.144      -.28898    1.977003
+                |
+    w#c.d#c.f05 |
+             1  |   .6393993   .6279006     1.02   0.309    -.5912633    1.870062
+                |
+    w#c.d#c.f06 |
+             1  |   .0635893   .7291451     0.09   0.931    -1.365509    1.492687
+                |
+w#c.d#c.f04#c.x |
+             1  |  -.3311716   .4346827    -0.76   0.446    -1.183134    .5207907
+                |
+w#c.d#c.f05#c.x |
+             1  |  -.0871208   .4233854    -0.21   0.837    -.9169408    .7426993
+                |
+w#c.d#c.f06#c.x |
+             1  |   .2487101   .4193473     0.59   0.553    -.5731955    1.070616
+                |
+            f02 |   .0233812   .2564817     0.09   0.927    -.4793136     .526076
+            f03 |  -.1696057   .2638673    -0.64   0.520    -.6867762    .3475648
+            f04 |   .0615649    .314404     0.20   0.845    -.5546557    .6777855
+            f05 |  -.0310666   .3044422    -0.10   0.919    -.6277623    .5656291
+            f06 |   .4871258   .3149085     1.55   0.122    -.1300836    1.104335
+                |
+      c.f02#c.x |  -.0931148   .2471558    -0.38   0.706    -.5775313    .3913017
+                |
+      c.f03#c.x |   .1677619   .2654272     0.63   0.527    -.3524658    .6879896
+                |
+      c.f04#c.x |   .2753831   .3207561     0.86   0.391    -.3532872    .9040535
+                |
+      c.f05#c.x |   .4356222   .3109157     1.40   0.161    -.1737615    1.045006
+                |
+      c.f06#c.x |   .1377186   .3365369     0.41   0.682    -.5218816    .7973188
+                |
+              d |  -2.283034   .3905848    -5.85   0.000    -3.048566   -1.517502
+              x |   .5233072    .208774     2.51   0.012     .1141177    .9324967
+                |
+        c.d#c.x |   .0585124   .2287954     0.26   0.798    -.3899184    .5069432
+                |
+        c.d#c.t |   .0486698     .13168     0.37   0.712    -.2094182    .3067579
+                |
+          _cons |  -.4575918   .2056414    -2.23   0.026    -.8606415   -.0545421
+---------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0 t = 4) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 1
+    f05 = 0
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    t   = 4
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0744289   .0532989     1.40   0.163    -.0300351    .1788929
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0 t = 5) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 1
+    f06 = 0
+    f02 = 0
+    f03 = 0
+    t   = 5
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0989249   .0751587     1.32   0.188    -.0483836    .2462333
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(w) at(d = 1 f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1 t = 6) ///
+>         subpop(if d == 1) noestimcheck vce(uncond)
+
+Average marginal effects                               Number of obs   = 6,000
+                                                       Subpop. no. obs = 2,292
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f04 = 0
+    f05 = 0
+    f06 = 1
+    f02 = 0
+    f03 = 0
+    t   = 6
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0732969   .1037802     0.71   0.480    -.1301086    .2767025
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+.         
+. 
+end of do-file
+
+. help syntax
+
+. help collapse
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`varname' `over') fast
+ 10.                 sum 
+ 11.         }
+ 12. end
+
+. 
+end of do-file
+
+. frause dumbell
+no; dataset in memory has changed since last saved
+r(4);
+
+. frause oaxaca
+no; dataset in memory has changed since last saved
+r(4);
+
+. frause oaxaca, clear
+(Excerpt from the Swiss Labor Market Survey 1998)
+
+. dumbel lnwage , by(educ) over(female)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      female |          2          .5    .7071068          0          1
+      lnwage |          2    3.353492    .1226553   3.266761   3.440222
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. program dumbel
+program dumbel already defined
+r(110);
+
+end of do-file
+
+r(110);
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 sum 
+ 11.         }
+ 12. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        educ |         20      11.275    3.305597          5       17.5
+      female |         20          .5    .5129892          0          1
+      lnwage |         20    3.289462    .3881038   2.289063   3.738347
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 des 
+ 11.         }
+ 12. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+
+Contains data
+ Observations:            20                  Excerpt from the Swiss Labor Market Survey 1998
+    Variables:             3                  
+------------------------------------------------------------------------------------------------------
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+------------------------------------------------------------------------------------------------------
+educ            float   %9.0g                 years of education
+female          byte    %9.0g                 sex of respondent (1=female)
+lnwage          float   %9.0g                 (mean) lnwage
+------------------------------------------------------------------------------------------------------
+Sorted by: educ  female
+     Note: Dataset has changed since last saved.
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 two (scatter `varlist' `by'  if `over'==0) ///
+>                         (scatter `varlist' `by'  if `over'==1) 
+ 11.         }
+ 12. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 two (scatter `by' `varlist' if `over'==0) ///
+>                         (scatter `by' `varlist' if `over'==1) 
+ 11.         }
+ 12. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+
+. help pcspike
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (scatter `by' `varlist'0, msize(1)) ///
+>                         (scatter `by' `varlist'1, msize(1)) 
+ 12.                         
+.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (scatter `by' `varlist'0, msize(1)) ///
+>                         (scatter `by' `varlist'1, msize(1)) ///
+>                         (pcispike `varlist'0 `by' `varlist'1 `by')                      
+ 12.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+pcispike is not a twoway plot type
+r(198);
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (scatter `by' `varlist'0, msize(1)) ///
+>                         (scatter `by' `varlist'1, msize(1)) ///
+>                         (pcspike `varlist'0 `by' `varlist'1 `by')                       
+ 12.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (scatter `by' `varlist'0, msize(1)) ///
+>                         (scatter `by' `varlist'1, msize(1)) ///
+>                         (pcspike `by' `varlist'0 `by' `varlist'1)                       
+ 12.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (pcspike `by' `varlist'0 `by' `varlist'1) ///
+>                         (scatter `by' `varlist'0, msize(1)) ///
+>                         (scatter `by' `varlist'1, msize(1)) 
+ 12.                         
+.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (pcspike `by' `varlist'0 `by' `varlist'1) ///
+>                         (scatter `by' `varlist'0, msize(2)) ///
+>                         (scatter `by' `varlist'1, msize(2)) 
+ 12.                         
+.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 two (pcspike `by' `varlist'0 `by' `varlist'1, lwidth(1)) ///
+>                         (scatter `by' `varlist'0, msize(2)) ///
+>                         (scatter `by' `varlist'1, msize(2)) 
+ 12.                         
+.         }
+ 13. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               20   ->   10          
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+. joinv single married divorced
+command joinv is unrecognized
+r(199);
+
+. vjoin single married divorced
+Assumes all variables are mutually exclusive
+Using var=1 to identify a group
+
+. dumbel lnwage , by(educ) over(newvar)
+(j = 1 2 3)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               30   ->   10          
+Number of variables                   3   ->   4           
+j variable (3 values)            newvar   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage1 lnwage2 lnwage3
+-----------------------------------------------------------------------------
+variable lnwage0 not found
+r(111);
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 sum
+ 11.                 reshape wide `varlist' , i(`by') j(`over')
+ 12.                 two (pcspike `by' `varlist'0 `by' `varlist'1, lwidth(1)) ///
+>                         (scatter `by' `varlist'0, msize(2)) ///
+>                         (scatter `by' `varlist'1, msize(2)) 
+ 13.                         
+.         }
+ 14. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(newvar)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        educ |         30      11.275    3.276977          5       17.5
+      newvar |         30           2    .8304548          1          3
+      lnwage |         30     3.32385    .4167289    1.93779   3.905769
+(j = 1 2 3)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               30   ->   10          
+Number of variables                   3   ->   4           
+j variable (3 values)            newvar   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage1 lnwage2 lnwage3
+-----------------------------------------------------------------------------
+variable lnwage0 not found
+r(111);
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 
+.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 sum
+ 12.                 two (pcspike `by' `varlist'0 `by' `varlist'1, lwidth(1)) ///
+>                         (scatter `by' `varlist'0, msize(2)) ///
+>                         (scatter `by' `varlist'1, msize(2)) 
+ 13.                         
+.         }
+ 14. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(newvar)
+(j = 1 2 3)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               30   ->   10          
+Number of variables                   3   ->   4           
+j variable (3 values)            newvar   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage1 lnwage2 lnwage3
+-----------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        educ |         10      11.275    3.396178          5       17.5
+     lnwage1 |         10    3.105576    .4918504    1.93779   3.520674
+     lnwage2 |         10    3.448689    .2639175    3.00867   3.767251
+     lnwage3 |         10    3.417286    .4099479    2.49039   3.905769
+variable lnwage0 not found
+r(111);
+
+. do "C:\Users\Fernando\AppData\Local\Temp\STD52b0_000000.tmp"
+
+. capture program drop dumbel
+
+. program dumbel
+  1.         syntax varname [if] [in] [iw aw fw/], [by(varname) over(varname)] [stat(str)]
+  2.         marksample touse
+  3.         
+.         markout `touse' `by' `over' `exp'
+  4.         tempvar toframe
+  5.         frame put `varlist' `by' `over' `exp' if `touse', into(`toframe')
+  6.         if "`exp'"!="" local exp =`exp'
+  7.         
+.         frame `toframe': {
+  8.                 if "`stat'"=="" local stat mean
+  9.                 collapse (`stat') `varlist' [`weight'`exp'], by(`by' `over') fast
+ 10.                 
+.                 reshape wide `varlist' , i(`by') j(`over')
+ 11.                 sum
+ 12.                 two (pcspike `by' `varlist'1 `by' `varlist'3, lwidth(1)) ///
+>                         (scatter `by' `varlist'1, msize(2)) ///
+>                         (scatter `by' `varlist'2, msize(2)) (scatter `by' `varlist'3, msize(2)) 
+ 13.                         
+.         }
+ 14. end
+
+. 
+end of do-file
+
+. dumbel lnwage , by(educ) over(newvar)
+(j = 1 2 3)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               30   ->   10          
+Number of variables                   3   ->   4           
+j variable (3 values)            newvar   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage1 lnwage2 lnwage3
+-----------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        educ |         10      11.275    3.396178          5       17.5
+     lnwage1 |         10    3.105576    .4918504    1.93779   3.520674
+     lnwage2 |         10    3.448689    .2639175    3.00867   3.767251
+     lnwage3 |         10    3.417286    .4099479    2.49039   3.905769
+
+. dumbel lnwage , by(isco) over(newvar)
+(j = 1 2 3)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               27   ->   9           
+Number of variables                   3   ->   4           
+j variable (3 values)            newvar   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage1 lnwage2 lnwage3
+-----------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        isco |          9           5    2.738613          1          9
+     lnwage1 |          9    3.135751    .2427451   2.692053     3.4701
+     lnwage2 |          9    3.374001    .2378776   3.036672   3.729257
+     lnwage3 |          9    3.382142    .2453507   3.065408   3.872909
+
+. dumbel lnwage , by(isco) over(female)
+(j = 0 1)
+
+Data                               Long   ->   Wide
+-----------------------------------------------------------------------------
+Number of observations               18   ->   9           
+Number of variables                   3   ->   3           
+j variable (2 values)            female   ->   (dropped)
+xij variables:
+                                 lnwage   ->   lnwage0 lnwage1
+-----------------------------------------------------------------------------
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        isco |          9           5    2.738613          1          9
+     lnwage0 |          9    3.360476    .2165327   3.023529   3.673753
+     lnwage1 |          9    3.152838    .2463575   2.810686   3.513175
+variable lnwage3 not found
+r(111);
+
+. exit, clear

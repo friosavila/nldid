@@ -1,0 +1,331 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\simulations\did_simulate_T2_binary_nocov_20211229_1.log
+  log type:  text
+ opened on:  29 Dec 2021, 12:38:11
+
+. 
+. set seed 123
+
+. 
+. global nobs = 1000
+
+. global tobs = 2
+
+. global iter = 1000
+
+. 
+. set obs $nobs
+Number of observations (_N) was 0, now 1,000.
+
+. gen id =_n
+
+. expand $tobs
+(1,000 observations created)
+
+. bysort id: gen year = _n + 2000
+
+. gen f02 = year == 2002
+
+. 
+. gen c = sqrt(2)*rnormal(0,1)
+
+. bysort id: replace c = c[1]
+(1000 real changes made)
+
+. 
+. * Might add serial correlation in future.
+. gen e0 = sqrt(2)*rnormal(0,1)
+
+. gen e1 = sqrt(2)*rnormal(0,1)
+
+. 
+. 
+. * True model is logit with unobserved effect:
+. gen u0 = logit(normal((c + e0)/2))/sqrt(3)
+
+. gen u1 = logit(normal((c + e1)/2))/sqrt(3)
+
+. 
+. /*
+> * True model is probit with unobserved effect:
+> gen u0 = (c + e0)/2
+> gen u1 = (c + e1)/2
+> */
+. 
+. /*
+> * True model has independent logits:
+> gen u0 = rlogistic()
+> gen u1 = rlogistic()
+> */
+. 
+. gen trt = -.3 + rlogistic(0,1) > 0
+
+. bysort id: gen d = trt[1]
+
+. drop trt
+
+. 
+. 
+. gen y0star = .4*f02 - 2*d + u0
+
+. gen y1star = y0star
+
+. replace y1star = .4 + .4*f02 - 2*d + u1 if f02
+(1,000 real changes made)
+
+. 
+. gen y0 = y0star > 0
+
+. gen y1 = y1star > 0
+
+. 
+. sum y0 y1 d
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+          y0 |      2,000       .3435    .4749953          0          1
+          y1 |      2,000        .405    .4910148          0          1
+           d |      2,000        .436    .4960111          0          1
+
+. 
+. gen te_i = y1 - y0 if f02
+(1,000 missing values generated)
+
+. sum te_i if d & f02
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+        te_i |        436    .0619266    .3992176         -1          1
+
+. 
+. * Observed outcome:
+. gen y = (1 - d)*y0 + d*y1
+
+. 
+. * Generate time-varying treatment indicator for common intervention:
+. gen w = d*f02
+
+.         
+. xtset id year
+
+Panel variable: id (strongly balanced)
+ Time variable: year, 2001 to 2002
+         Delta: 1 unit
+
+. 
+. * Linear model, POLS:
+. 
+. reg y c.d#c.f02 f02 d, vce(cluster id)
+
+Linear regression                               Number of obs     =      2,000
+                                                F(3, 999)         =     341.37
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2936
+                                                Root MSE          =     .40307
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   c.d#c.f02 |  -.0890103   .0288121    -3.09   0.002    -.1455495   -.0324711
+             |
+         f02 |   .1968085   .0233604     8.42   0.000     .1509674    .2426497
+           d |  -.4522415   .0222442   -20.33   0.000    -.4958923   -.4085908
+       _cons |   .4751773   .0210542    22.57   0.000     .4338618    .5164928
+------------------------------------------------------------------------------
+
+.         
+. * Logit model, pooled QMLE:
+. 
+. logit y i.w#c.d#c.f02 f02 d, vce(cluster id) noomitted
+
+note: 0.w#c.d#c.f02 omitted because of collinearity.
+Iteration 0:   log pseudolikelihood = -1303.3451  
+Iteration 1:   log pseudolikelihood = -988.16742  
+Iteration 2:   log pseudolikelihood = -965.40319  
+Iteration 3:   log pseudolikelihood = -963.83739  
+Iteration 4:   log pseudolikelihood = -963.82512  
+Iteration 5:   log pseudolikelihood = -963.82512  
+
+Logistic regression                                     Number of obs =  2,000
+                                                        Wald chi2(3)  = 346.48
+                                                        Prob > chi2   = 0.0000
+Log pseudolikelihood = -963.82512                       Pseudo R2     = 0.2605
+
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |               Robust
+           y | Coefficient  std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ w#c.d#c.f02 |
+          1  |   1.040816    .348468     2.99   0.003     .3578318    1.723801
+             |
+         f02 |   .8165529   .0995621     8.20   0.000     .6214146    1.011691
+           d |  -3.652482   .3310086   -11.03   0.000    -4.301247   -3.003717
+       _cons |  -.0993725   .0843614    -1.18   0.239    -.2647177    .0659727
+------------------------------------------------------------------------------
+
+. margins, dydx(w) at(d = 1 f02 = 1) noestimcheck post
+
+Conditional marginal effects                             Number of obs = 2,000
+Model VCE: Robust
+
+Expression: Pr(y), predict()
+dy/dx wrt:  1.w
+At: d   = 1
+    f02 = 1
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0802981   .0214015     3.75   0.000     .0383519    .1222443
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. 
+. capture program drop did_2
+
+. 
+. program did_2, rclass
+  1. drop _all
+  2. 
+. set obs $nobs
+  3. gen id =_n
+  4. expand $tobs
+  5. 
+. bysort id: gen year = _n + 2000
+  6. gen f02 = year == 2002
+  7. 
+. xtset id year
+  8. 
+. gen c = sqrt(2)*rnormal(0,1)
+  9. bysort id: replace c = c[1]
+ 10. 
+. gen e0 = sqrt(2)*rnormal(0,1)
+ 11. gen e1 = sqrt(2)*rnormal(0,1)
+ 12. 
+. * True model is logit with unobserved effect:
+. gen u0 = logit(normal((c + e0)/2))/sqrt(3)
+ 13. gen u1 = logit(normal((c + e1)/2))/sqrt(3)
+ 14. 
+. /*
+> * True model is probit with unobserved effect:
+> gen u0 = (c + e0)/2
+> gen u1 = (c + e1)/2
+> */
+. 
+. /*
+> * True model has independent logits:
+> gen u0 = rlogistic()
+> gen u1 = rlogistic()
+> */
+. 
+. gen trt = -.4 + rlogistic(0,1) > 0
+ 15. bysort id: gen d = trt[1]
+ 16. drop trt
+ 17. 
+. gen y0star = .4*f02 - 2*d + u0
+ 18. gen y1star = y0star
+ 19. replace y1star = .4 + .4*f02 - 2*d + u1 if f02
+ 20. 
+. gen y0 = y0star > 0
+ 21. gen y1 = y1star > 0
+ 22. 
+. sum y0
+ 23. return scalar y0_mean = r(mean)
+ 24. sum y1
+ 25. return scalar y1_mean = r(mean)
+ 26. 
+. sum d
+ 27. return scalar d_p = r(mean)
+ 28. 
+. gen te = y1 - y0 if f02
+ 29. sum te if d & f02
+ 30. return scalar att = r(mean)
+ 31. 
+. * Observed outcome:
+.         gen y = (1 - d)*y0 + d*y1
+ 32. 
+. * Generate time-varying treatment indicator for common intervention:
+.         gen w = d*f02
+ 33.         
+. * Linear, POLS:
+.         reg y c.d#c.f02 f02 d
+ 34.         return scalar att_linear = _b[c.d#c.f02]
+ 35.         
+. * Logit model, pooled QMLE:
+.         logit y i.w#c.d#c.f02 f02 d, noomitted
+ 36.         margins, dydx(w) at(d = 1 f02 = 1) noestimcheck post
+ 37.         return scalar att_logit = _b[1.w]
+ 38. 
+. * Probit via pooled estimation. Not the same as imputation, but would be 
+. * natural.
+. 
+.         probit y i.w#c.d#c.f02 f02 d, noomitted
+ 39.         margins, dydx(w) at(d = 1 f02 = 1) noestimcheck post
+ 40.         return scalar att_probit = _b[1.w]
+ 41. 
+. end
+
+. 
+. set seed 123
+
+. 
+. simulate r(att) r(att_linear) r(att_logit) r(att_probit) r(d_p) r(y0_mean) r(y1_mean), reps($iter): did_2
+
+      Command: did_2
+       _sim_1: r(att)
+       _sim_2: r(att_linear)
+       _sim_3: r(att_logit)
+       _sim_4: r(att_probit)
+       _sim_5: r(d_p)
+       _sim_6: r(y0_mean)
+       _sim_7: r(y1_mean)
+
+Simulations (1,000)
+----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5 
+..................................................    50
+..................................................   100
+..................................................   150
+..................................................   200
+..................................................   250
+..................................................   300
+..................................................   350
+..................................................   400
+..................................................   450
+..................................................   500
+..................................................   550
+..................................................   600
+..................................................   650
+..................................................   700
+..................................................   750
+..................................................   800
+..................................................   850
+..................................................   900
+..................................................   950
+.................................................. 1,000
+
+. 
+. sum, sep(4)
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      _sim_1 |      1,000     .051871    .0164086   -.002457   .1051213
+      _sim_2 |      1,000   -.0853121    .0277494  -.1875921   .0182094
+      _sim_3 |      1,000    .0513296    .0205205  -.0275279   .1186671
+      _sim_4 |      1,000    .0363664    .0224759  -.0490068    .109834
+-------------+---------------------------------------------------------
+      _sim_5 |      1,000      .40186    .0153796       .352       .463
+      _sim_6 |      1,000    .3672205     .012905      .3245       .409
+      _sim_7 |      1,000    .4175795    .0127274       .367        .46
+
+.         
+. log close
+      name:  <unnamed>
+       log:  C:\Users\wooldri1\Dropbox\nonlinear_did\simulations\did_simulate_T2_binary_nocov_20211229_1.log
+  log type:  text
+ closed on:  29 Dec 2021, 12:42:12
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
