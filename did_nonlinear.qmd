@@ -1,0 +1,103 @@
+---
+title: "Nonlinear DID:"
+subtitle: "Lessons from Staggered Linear Differences in Differences"
+format: 
+    revealjs:
+        slide-number: true
+        width: 1500
+        height: 900
+        code-fold: false
+editor: visual    
+---
+
+## Introduction
+
+# Disclaimer:
+who am I not?
+
+## Not Andrew Goodman-Bacon 
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/paste-5.png){width="400"}
+
+:::
+
+::: {.column width="60%"}
+
+- Among others, Andrew showed the problems of using TWFE in the presence of staggered adoption of the treatment.
+
+- Because of treatment timing, later treated units are compared to **bad** controls (early treated ones), in potential violation of the parallel trends assumption.
+
+- This also relates to negative weights.
+
+:::
+
+::::
+
+## Not Pedro Sant'Anna 
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/paste-4.png){width="400"}
+:::
+
+::: {.column width="60%"}
+
+- Pedro and Brantly proposed deconstructing the GxT problem. Consider only good 2x2 DD designs to identify Treatment effects in DID.
+- Agregate them as needed to obtain the desired treatment effect (weighted Average). (dynamic, average, across time, across groups, etc)
+  
+- Along with **Jonathan Roth**, discuss the problem of PTA and function forms. Not all may be valid.
+
+:::
+
+::::
+
+## Not Jeffrey Wooldridge 
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/paste-1.png){width="400"}
+
+:::
+
+::: {.column width="60%"}
+
+- Jeff Wooldridge brought back life to the **TWFE**. 
+- The problem was not the **TWFE** part of the analysis, but the model specification. 
+  - ($post \times treated$ instead of $G \times T$)
+- This insights, can be extended to nonlinear cases, which have been nicely packaged in `jwdid`.
+
+:::
+
+::::
+
+## Fernando Rios-Avila  
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/paste-7.png){width="400"}
+
+:::
+
+::: {.column width="60%"}
+
+- I have followed some of the developments in DID with staggered adoption of the treatment. 
+  - Implemented few things (`drdrd`/`csdid`/`csdid2`/`jwdid`)
+  - Understood few others (comparison groups, efficiency, negative weights, nonlinear models)
+- And today, I will be providing some of my insights regarding the empirical analysis of nonlinear DID.
+  - I will rely heavily on [Wooldridge(2023)](https://academic.oup.com/ectj/article/26/3/C31/7250479), 
+  - and to some extent on [Roth and Sant'Anna (2023)](https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA19402)
+
+:::
+
+::::
+
+## Basics: 2x2 DiD
+
+- 
+## Extensions: NxG DiD
