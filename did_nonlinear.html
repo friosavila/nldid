@@ -8,7 +8,7 @@
 <link href="did_nonlinear_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.450">
+  <meta name="generator" content="quarto-1.4.455">
 
   <title>Nonlinear DID:</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,6 +28,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="did_nonlinear_files/libs/revealjs/dist/theme/quarto.css">
   <link href="did_nonlinear_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -155,7 +220,8 @@
   }
 
   .callout.callout-titled .callout-body > .callout-content > :last-child {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .callout.callout-titled .callout-icon::before {
@@ -333,6 +399,33 @@
 </section>
 <section id="introduction" class="slide level2">
 <h2>Introduction</h2>
+<ul>
+<li><strong>Differences in Differences</strong> (DiD) design is one of the most popular methods in applied microeconomics, because it requires relatively few assumptions to identify treatment effects.
+<ul>
+<li>No anticipation,</li>
+<li>Parallel trends,</li>
+<li>No spillovers</li>
+</ul></li>
+<li>The canonical DiD, a 2x2 design, simply compares means (or conditional means) of the outcome variable (before after x treated non-treated) to identify treatment effects.
+<ul>
+<li>Thus it can be used even if outcome is a limited dependent variable (binary, count, etc) (parallel to the linear regression case)</li>
+</ul></li>
+</ul>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<ul>
+<li>Because the Canonical design is rather limited, many extensions have been proposed to handle more complex scenarios: Staggered Treatment with <strong>GxT DID</strong>.
+<ul>
+<li>Early Extensions (infamous TWFE) have been shown to be problematic. (negative weights and bad controls)</li>
+<li>but more recent approaches (See Roth and Sant’Anna 2023) have shown how can one better use these designs to identify treatment effects, avoiding the simple-TWFE problems.</li>
+</ul></li>
+<li>Linear models, however, have limitations:
+<ul>
+<li>Linear models do a poor job interpolating and predicting LDV outcomes</li>
+<li>Parallel trends assumptions may only be credible under specific functional forms</li>
+</ul></li>
+</ul>
 </section>
 <section>
 <section id="disclaimer" class="title-slide slide level1 center">
@@ -362,7 +455,7 @@
 <ul>
 <li><p>Pedro and Brantly proposed deconstructing the GxT problem. Consider only good 2x2 DD designs to identify Treatment effects in DID.</p></li>
 <li><p>Agregate them as needed to obtain the desired treatment effect (weighted Average). (dynamic, average, across time, across groups, etc)</p></li>
-<li><p>Along with <strong>Jonathan Roth</strong>, discuss the problem of PTA and function forms. Not all may be valid.</p></li>
+<li><p>Along with <strong>Jonathan Roth</strong>, discuss the problem of PTA and functional forms. Not all may be valid.</p></li>
 </ul>
 </div>
 </div>
@@ -393,7 +486,7 @@
 <ul>
 <li>I have followed some of the developments in DID with staggered adoption of the treatment.
 <ul>
-<li>Implemented few things (<code>drdrd</code>/<code>csdid</code>/<code>csdid2</code>/<code>jwdid</code>)</li>
+<li>Implemented few things (<code>drdid</code>/<code>csdid</code>/<code>csdid2</code>/<code>jwdid</code>)</li>
 <li>Understood few others (comparison groups, efficiency, negative weights, nonlinear models)</li>
 </ul></li>
 <li>And today, I will be providing some of my insights regarding the empirical analysis of nonlinear DID.
@@ -408,8 +501,241 @@
 <section id="basics-2x2-did" class="slide level2">
 <h2>Basics: 2x2 DiD</h2>
 <ul>
-<li><h2 id="extensions-nxg-did">Extensions: NxG DiD</h2></li>
+<li><p>In the 2x2 DID design, we have 2 groups:</p>
+<ul>
+<li>Control (<span class="math inline">\(D=0\)</span>) y treated (<span class="math inline">\(D=1\)</span>),</li>
+</ul></li>
+<li><p>Which are observed for two periods of time:</p>
+<ul>
+<li>Before (<span class="math inline">\(T=0\)</span>) and after (<span class="math inline">\(T=1\)</span>) the treatment.</li>
+</ul></li>
+<li><p>For all groups and periods of time, we observe the <em>realized</em> outcome <span class="math inline">\(Y_{i,t}\)</span>, but cannot observe all <em>potential</em> outcomes <span class="math inline">\(Y_{i,t}(D)\)</span>.</p></li>
+<li><p>Realized outcomes are determined by the following equation:</p></li>
 </ul>
+<p><span class="math display">\[Y_{i,t}=D_i Y_{i,t}(1) + (1-D_i) Y_{i,t}(0)
+\]</span></p>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<p>If treatment occured at some point between T0 and T1, the estimate of interested, Average Treatment effect, could be estimated as follows:</p>
+<p><span class="math display">\[ATT = E(Y_{i,1}(1) - Y_{i,1}(0)|D_i=1)
+\]</span></p>
+<p>For the treated, we observe <span class="math inline">\(Y_{i,1}(1)\)</span>, but cannot observe <span class="math inline">\(Y_{i,t}(0)\)</span> (counterfactual), thus, to identify Treatment Effects, we need to impose some assumptions.</p>
+<ul>
+<li>PTA:</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+E(Y_{i,1}(0) - Y_{i,0}(0)|D_i=1) &amp;= E(Y_{i,1} - Y_{i,0}|D_i=0) \\
+E(Y_{i,1}(0)|D_i=1) &amp;= E(Y_{i,0}(0)|D_i=1) + E(Y_{i,1} - Y_{i,0}|D_i=0)
+\end{aligned}
+\]</span></p>
+<ul>
+<li>No Anticipation: <span class="math display">\[Y_{i,0}(1) =  Y_{i,0}(0)=Y_{i,0}\]</span></li>
+</ul>
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<p>Thus, ATT can be estimated as follows:</p>
+<p><span class="math display">\[\begin{aligned}
+ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
+&amp;= E(Y_{i,1}|D_i=1)- \Big(E(Y_{i,0}|D_i=1) + E(Y_{i,1} - Y_{i,0}|D_i=0)  \Big) \\
+&amp;= E(Y_{i,1}-Y_{i,0}|D_i=1)- E(Y_{i,1} - Y_{i,0}|D_i=0)  
+\end{aligned}
+\]</span></p>
+<ul>
+<li>And the Same could be done via Regressions:</li>
+</ul>
+<p><span class="math display">\[y_{i,t} = \beta_0 + \beta_1 T + \beta_2 D_i + \theta (D_i \times T) + \epsilon_{i,t}
+\]</span></p>
+<ul>
+<li>Here, the ATT identification relies on the Parallel trend assumption.</li>
+</ul>
+</section>
+<section id="how-to-test-for-pta" class="slide level2">
+<h2>How to test for PTA?</h2>
+<ul>
+<li>PTA is a non testable assumption, because we do not observe all potential outcomes.</li>
+<li>However, if we “move”, from the 2x2 design, it may be possible to test if PTA hold Before treatment.</li>
+</ul>
+<p>Consider T periods of time, and that treatment happen at period G</p>
+<p>We could use the same equation as before, and estimate ATT for any period of time (relative to G)</p>
+<p><span class="math display">\[ATT(T) = E(Y_{i,T} - Y_{i,G-1}|D_i=1) - E(Y_{i,T} - Y_{i,G-1}|D_i=0)
+\]</span></p>
+<ul>
+<li><p>We could use “post treatment” data to estimate the ATTs.</p></li>
+<li><p>and use “pre treatment” data as a proxy test for PTA.</p></li>
+<li><p>If PTA holds, then <span class="math inline">\(E(ATT(T)|T&lt;G) = 0\)</span></p></li>
+</ul>
+</section>
+<section id="section-3" class="slide level2">
+<h2></h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">What if PTA does not hold?</a></li><li><a href="#tabset-1-2">Wage PTA in levels</a></li><li><a href="#tabset-1-3">Wage PTA in logs</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<ul>
+<li><p>As suggested by Wooldridge (2023), one of the reasons PTA may not hold is because we may be analyzing the wrong model.</p>
+<ul>
+<li>consider two groups of workers, high and low earners, that experience the same wage growth. (parallel trends in relative terms)</li>
+<li>If we observe wages at levels, parallel trends would be violated</li>
+<li>And Post treatment estimates will be missleading</li>
+</ul></li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1"></a>*| output: false</span>
+<span id="cb1-2"><a href="#cb1-2"></a>*| echo: false</span>
+<span id="cb1-3"><a href="#cb1-3"></a>*| fig-align: <span class="bn">center</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a> </span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">set</span> <span class="dv">scheme</span> white2</span>
+<span id="cb1-6"><a href="#cb1-6"></a>color_style tableau</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">clear</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">set</span> <span class="kw">obs</span> 20</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">gen</span> y1 = 10</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">gen</span> y2 = 30</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">replace</span> y1 = y1[<span class="dt">_n</span>-1]*(1.02 + (<span class="dt">_n</span>&gt;11)*0.03) <span class="kw">if</span> <span class="dt">_n</span>&gt;1</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">replace</span> y2 = y2[<span class="dt">_n</span>-1]*1.02 <span class="kw">if</span> <span class="dt">_n</span>&gt;1</span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="fu">scalar</span> yy1 = y1[11]</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="fu">scalar</span> yy2 = y2[11]</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="kw">replace</span> y1=y1-yy1</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">replace</span> y2=y2-yy2</span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="kw">gen</span> t =<span class="dt">_n</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">gen</span> dy = y1 - y2</span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="kw">scatter</span> y1 y2 dy t, <span class="kw">connect</span>(<span class="ot">l</span> <span class="ot">l</span> <span class="ot">l</span>) <span class="co">///</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Low earner"</span> 2 <span class="st">"High earner"</span> 3 <span class="st">"DID"</span>))</span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="kw">graph</span> <span class="kw">export</span> fig1.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img data-src="fig1.png" width="1000"></p>
+</div>
+<div id="tabset-1-3">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1"></a>*| output: false</span>
+<span id="cb2-2"><a href="#cb2-2"></a>*| echo: false</span>
+<span id="cb2-3"><a href="#cb2-3"></a>*| fig-align: <span class="bn">center</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">gen</span> lny2=<span class="fu">ln</span>(y2+yy2) - <span class="fu">ln</span>(yy2) </span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">gen</span> lny1=<span class="fu">ln</span>(y1+yy1) - <span class="fu">ln</span>(yy1)</span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">gen</span> dly = lny1 - lny2</span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">replace</span>  lny2=lny2-0.01</span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="kw">scatter</span> lny1 lny2 dly t, <span class="kw">connect</span>(<span class="ot">l</span> <span class="ot">l</span> <span class="ot">l</span>) <span class="co">///</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Low earner"</span> 2 <span class="st">"High earner"</span> 3 <span class="st">"DID"</span>)) <span class="co">///</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="bn">xsize</span>(12) <span class="bn">ysize</span>(8)</span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="kw">graph</span> <span class="kw">export</span> fig2.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img data-src="fig2.png" width="1000"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="pta-may-hold-for-gbar-y" class="slide level2">
+<h2>PTA may hold for <span class="math inline">\(G(\bar Y)\)</span></h2>
+<p>A similar story could be told about other types of variables.</p>
+<p>In general, it is possible that Parallel trends hold for some other monotonic transformation of the outcome variable.</p>
+<p><span class="math display">\[G^{-1}\Big( E_1 [Y_{i,1}(0)] \Big) -G^{-1}\Big(E_1[ Y_{i,0}(0) ] \Big)  
+= G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)\]</span></p>
+<p>This is very similar to the PTA assumption explored in Roth and Sant’Anna (2023).</p>
+<p><span class="math display">\[E_1\Big[Y_{i,1}(0))\Big] - E_1\Big[g(Y_{i,0}(0))\Big] = E_0\Big[g(Y_{i,1})\Big] - E_0\Big[g(Y_{i,0})\Big]
+\]</span></p>
+<p>Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the latent index.</p>
+</section>
+<section id="how-do-things-change" class="slide level2">
+<h2>How do things Change?</h2>
+<ul>
+<li>Using this insight, we can go back to the 2x2 design, and see how things change.</li>
+</ul>
+<p>Before:</p>
+<p><span class="math display">\[E(y_{i,t}|D,T)=\beta_0 + \beta_1 T + \beta_2 D_i + \theta (D_i \times T)
+\]</span></p>
+<p>After:</p>
+<p><span class="math display">\[E(y_{i,t}|D,T)=G\Big(\beta_0 + \beta_1 T + \beta_2 D_i + \theta (D_i \times T)\Big)
+\]</span></p>
+<ul>
+<li>For the practitioner, the extended Nonlinear DID simply requires choosing a functional form that better fits the data.
+<ul>
+<li>Poisson, logit, fractional regression, Linear model, etc</li>
+<li>Although, there is little gain in the simple 2x2 DID design.</li>
+</ul></li>
+</ul>
+</section>
+<section id="extension-i-adding-covariates" class="slide level2">
+<h2>Extension I: Adding Covariates</h2>
+<ul>
+<li><p>Many papers in the literature consider the use of covariates in the estimation of the ATT.</p></li>
+<li><p>The lessons from Sant’Anna and Zhao (2020):</p>
+<ul>
+<li>The choosen covariates should be time fixed, to avoid contamination of the treatment effect.</li>
+<li>Using covariates allows relaxing the parallel trends assumption: PTA hold for specific groups of individuals. (if not for the whole population due to compositional changes)</li>
+</ul></li>
+<li><p>In the 2x2 DID-Regression, covariates can be added with interactions:</p></li>
+</ul>
+<p><span class="math display">\[y_{i,t} = \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) + T \times X\gamma_T + D \times X\gamma_d + D \times T (X-\bar X )\lambda + \epsilon_{i,t}\]</span></p>
+<ul>
+<li>The same could be done in the nonlinear case</li>
+</ul>
+</section>
+<section id="extension-ii-gxt-did" class="slide level2">
+<h2>Extension II: GxT DiD</h2>
+<ul>
+<li>The 2x2 design is rather limited, because often people have access to multiple periods of time, with differential treatment timing. (staggered adoption of the treatment)
+<ul>
+<li>I call this the GxT design (G groups, T periods of time)</li>
+</ul></li>
+<li>The majority of the papers that analyze this case impose an additional assumption:
+<ul>
+<li>Treatment is not Reversable: Once treated always treated</li>
+</ul></li>
+</ul>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+<h3 id="the-problem">The Problem</h3>
+<ul>
+<li>Early extensions of the 2x2 design to the GxT design, relied on the <strong>TWFE</strong> estimator. <span class="math display">\[y_{i,t} = \delta_i + \delta_t + \theta^{fe} D_{i,t} + e_{i,t}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(D_{i,t}=1\)</span> only after treatment is in place, and zero otherwise.</p>
+<ul>
+<li>This model has been shown to be problematic, because of How OLS estimates the <span class="math inline">\(\theta^{fe}\)</span> parameter.
+<ul>
+<li><span class="math inline">\(\theta^{fe}\)</span> is a weighted average of all possible 2x2 DID designs.</li>
+<li>Some designs use early treated units as controls for late treated units, which is a violation of the parallel trends assumption. (effectively receiving negative weights) <span class="citation" data-cites="goodmanbacon2021">@goodmanbacon2021</span>, <span class="citation" data-cites="dechaisemartin2020">@dechaisemartin2020</span> and <span class="citation" data-cites="borusyak2023revisiting">@borusyak2023revisiting</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="section-5" class="slide level2">
+<h2></h2>
+<h3 id="avoiding-the-problem">Avoiding the Problem</h3>
+<ul>
+<li><p><span class="citation" data-cites="callaway2021">@callaway2021</span> proposes a simple solution: Deconstruct the problem into smaller pieces (2x2 DIDs), and aggregate them as needed.</p></li>
+<li><p><span class="citation" data-cites="wooldridge2022">@wooldridge2022</span>, however, proposes a different solution: Use the correct functional form to estimate the ATTs.</p></li>
+</ul>
+<p><span class="math display">\[\text{Instead of: }Y_{i,t} = \delta_i + \gamma_t  + \theta^{fe} PT_{i,t} + \epsilon_{i,t}\]</span></p>
+<p><span class="math display">\[\text{Use: }Y_{i,t} = \delta_i + \gamma_t  + \sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}\]</span></p>
+<ul>
+<li>Both of them suggest, embrace heterogeneity across time and cohorts.</li>
+</ul>
+</section>
+<section id="an-added-insight" class="slide level2">
+<h2>An added Insight</h2>
+<ul>
+<li><p>The approach proposed by <span class="citation" data-cites="wooldridge2022">@wooldridge2022</span>, is more efficient than <span class="citation" data-cites="callaway2021">@callaway2021</span>, because it uses all pre-treatment data to estimate the ATTs. (<span class="citation" data-cites="callaway2021">@callaway2021</span> uses only one pre-treatment data from the treated)</p></li>
+<li><p>However, doing this doesnt allow you to test for PTA directly, unless we use an alternative approach:</p></li>
+</ul>
+<p><span class="math display">\[Y_{i,t} = \delta_i + \gamma_t  +
+\sum_{g \in \mathbb{G}} \sum_{t=t_0}^{g-2} \theta_{g,t}^{pre} \mathbb{1}(G=g,T=t) +
+\sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t}^{post} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}\]</span></p>
+<ul>
+<li>This specification is equivalent to <span class="citation" data-cites="callaway2021">@callaway2021</span> and to <span class="citation" data-cites="sunabraham2021">@sunabraham2021</span>.
+<ul>
+<li>Its explicily a regression, that uses actual instead of relative time.</li>
+</ul></li>
+</ul>
+</section>
+<section id="nonlinear-did-jwdid" class="slide level2">
+<h2>Nonlinear DID: <code>jwdid</code></h2>
+<p>Model Specification</p>
+<p><span class="math display">\[y_it = \delta_i + \delta_t + \sum_{}\]</span></p>
+</section>
+<section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
 <div class="footer footer-default">
 
 </div>
@@ -440,7 +766,6 @@
       Reveal.initialize({
 'controlsAuto': true,
 'previewLinksAuto': false,
-'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
@@ -701,10 +1026,9 @@
         // clear code selection
         e.clearSelection();
       });
-      function tippyHover(el, contentFn) {
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
-          content: contentFn,
           maxWidth: 500,
           delay: 100,
           arrow: false,
@@ -714,8 +1038,17 @@
           interactive: true,
           interactiveBorder: 10,
           theme: 'light-border',
-          placement: 'bottom-start'
+          placement: 'bottom-start',
         };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
           config['offset'] = [0,0];
           config['maxWidth'] = 700;
         window.tippy(el, config); 
