@@ -1,13 +1,17 @@
 ---
 title: "Nonlinear DID:"
 subtitle: "Lessons from Staggered Linear Differences in Differences"
+author: 
+  - name: Fernando Rios-Avila
+    affiliation: Levy Economics Institute
 format: 
     revealjs:
         slide-number: true
-        width: 1500
+        width: 1600
         height: 900
         code-fold: false
 editor: visual    
+jupyter: nbstata
 ---
 
 ## Introduction
@@ -86,7 +90,7 @@ who am I not?
 - Jeff Wooldridge brought back life to the **TWFE**. 
 - The problem was not the **TWFE** part of the analysis, but the model specification. 
   - ($post \times treated$ instead of $G \times T$)
-- This insights, can be extended to nonlinear cases, which have been nicely packaged in `jwdid`.
+- This insights, can be extended to nonlinear cases.
 
 :::
 
@@ -117,7 +121,7 @@ who am I not?
 ## Basics: 2x2 DiD
 
 - In the 2x2 DID design, we have 2 groups:
-  - Control ($D=0$) y treated ($D=1$), 
+  - Control ($D=0$) and treated ($D=1$), 
 - Which are observed for two periods of time:
   - Before ($T=0$) and after ($T=1$) the treatment.
 
@@ -164,26 +168,33 @@ $$
 $$y_{i,t} = \beta_0 + \beta_1 T + \beta_2 D_i + \theta (D_i \times T) + \epsilon_{i,t}
 $$
 
-- Here, the ATT identification relies on the Parallel trend assumption. 
+- ATT identification relies on the Parallel trend assumption. 
 
 ## How to test for PTA?
 
-- PTA is a non testable assumption, because we do not observe all potential outcomes.
+- PTA is a non-testable assumption, because we do not observe all potential outcomes.
 - However, if we "move", from the 2x2 design, it may be possible to test if PTA hold Before treatment.
 
-Consider T periods of time, and that treatment happen at period G
+- Consider a case of T periods of time, and that treatment happen at period G.
 
-We could use the same equation as before, and estimate ATT for any period of time (relative to G)
+- Say we estimate the ATT comparing periods T and T-1, for any T<G.
 
-$$ATT(T) = E(Y_{i,T} - Y_{i,G-1}|D_i=1) - E(Y_{i,T} - Y_{i,G-1}|D_i=0)
+$$ATT(T) = E(Y_{i,T} - Y_{i,T-1}|D_i=1) - E(Y_{i,T} - Y_{i,T-1}|D_i=0)
 $$
 
-- We could use "post treatment" data to estimate the ATTs. 
+- If there is no anticipation, and Parallel trends hold, then $ATT(T)=0 \text{ if } T<G$ 
+  - This is what @callaway2021 uses for PTA testing
 
-- and use "pre treatment" data as a proxy test for PTA. 
+## How to test for PTA
 
-- If PTA holds, then $E(ATT(T)|T<G) = 0$
+- Alternatively, one could simply estimate all ATT's using period G-1 as baseline period:
+
+$$ATT^2(T) = E(Y_{i,T} - Y_{i,G-1}|D_i=1) - E(Y_{i,T} - Y_{i,G-1}|D_i=0)
+$$
  
+- And use all post-treatment periods to estimate the ATT ($T\geq G$)
+- and use all pre-treatment periods to test for PTA ($T<G$)
+  
 ## 
 
 ::: {.panel-tabset}
@@ -250,16 +261,16 @@ graph export fig2.png, replace width(1000)
 
 ## PTA may hold for $G(\bar Y)$
 
-A similar story could be told about other types of variables.
+A similar story could be told about other types of transformations.
 
-In general, it is possible that Parallel trends hold for some other monotonic transformation of the outcome variable.
+In general, it is possible that PTA hold for some other monotonic transformation of the outcome variable.
 
 $$G^{-1}\Big( E_1 [Y_{i,1}(0)] \Big) -G^{-1}\Big(E_1[ Y_{i,0}(0) ] \Big)  
 = G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)$$
 
 This is very similar to the PTA assumption explored in Roth and Sant'Anna (2023).
 
-$$E_1\Big[Y_{i,1}(0))\Big] - E_1\Big[g(Y_{i,0}(0))\Big] = E_0\Big[g(Y_{i,1})\Big] - E_0\Big[g(Y_{i,0})\Big]
+$$E_1\Big[g(Y_{i,1}(0))\Big] - E_1\Big[g(Y_{i,0}(0))\Big] = E_0\Big[g(Y_{i,1})\Big] - E_0\Big[g(Y_{i,0})\Big]
 $$
 
 Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the latent index.
@@ -279,7 +290,7 @@ $$E(y_{i,t}|D,T)=G\Big(\beta_0 + \beta_1 T + \beta_2 D_i + \theta (D_i \times T)
 $$
 
 - For the practitioner, the extended Nonlinear DID simply requires choosing a functional form that better fits the data.
-  - Poisson, logit, fractional regression, Linear model, etc
+  - Poisson, logit, ~~fractional regression~~, multinomial model, Linear model, etc
   - Although, there is little gain in the simple 2x2 DID design.
 
 ## Extension I: Adding Covariates
@@ -291,7 +302,11 @@ $$
   - Using covariates allows relaxing the parallel trends assumption: PTA hold for specific groups of individuals. (if not for the whole population due to compositional changes)
 - In the 2x2 DID-Regression, covariates can be added with interactions:
 
-$$y_{i,t} = \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) + T \times X\gamma_T + D \times X\gamma_d + D \times T (X-\bar X )\lambda + \epsilon_{i,t}$$
+$$\begin{aligned}
+y_{i,t} &= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
+&+ X\gamma +  D \times X\gamma_d + T \times X\gamma_T + D \times T (X-\bar X )\lambda + \epsilon_{i,t}
+\end{aligned}
+$$
 
 - The same could be done in the nonlinear case
 
@@ -312,7 +327,8 @@ where $D_{i,t}=1$ only after treatment is in place, and zero otherwise.
 
 - This model has been shown to be problematic, because of How OLS estimates the $\theta^{fe}$ parameter.
   - $\theta^{fe}$ is a weighted average of all possible 2x2 DID designs.
-  - Some designs use early treated units as controls for late treated units, which is a violation of the parallel trends assumption. (effectively receiving negative weights) @goodmanbacon2021, @dechaisemartin2020 and @borusyak2023revisiting 
+  - Some designs use early treated units as controls for late treated units, which might be a violation of the parallel trends assumption. 
+    - (treated units effectively receiving negative weights) @goodmanbacon2021, @dechaisemartin2020 and @borusyak2023revisiting 
 
 ##
 ### Avoiding the Problem
@@ -341,8 +357,56 @@ $$Y_{i,t} = \delta_i + \gamma_t  +
   - Its explicily a regression (Wooldridge)
   - and uses actual, instead of relative, time.
  
-## Implementing Nonlinear DID
+## Implementing NL-DID the `JW` way
 
-- The `jwdid` package implements the approach proposed by @wooldridge2022 and @wooldrige2023, and allows for the estimation of the ATTs using different functional forms.
+- One of the advantages of the approaches proposed by @wooldridge2 and wooldridge2023, is that they can be directly estimated using regressions.
+- The hard part is to construct all the interactions required for the model to work.
+- And a second challenge is to decide how to aggregate the results.
+
+**`jwdid`**
+
+- `jwdid` is a simple command that helps with the construction of all required interactions that could be used to implement Wooldridge approach.
+- It is flexible enough, in that it allows you to choose different estimators that would better fit your data.
+- it comes with its own post estimation commands that can help you aggregate the results into simple ATT, dynamics effects, across periods, across years, etc.
+
+- Lets take it for a Sin
+
+## Command Syntax
+
+- `jwdid` - Command Name. In charge of getting all interactions -right-
+  - `depvar` `[indepvar]` - Declare the dependent variables. Independent variables are optional. They should be time fixed.
+  - `[if]` `[in]` `[weight]`, Declares sample and weights. Only `PW` is allowed. 
+
+## Command Main Options
+
+- `jwdid`: main options
+  - `ivar(varname)`: Panel indicator. If not declared, command assumes one is using repeated cross sections.
+  - `cluster(varname)`: Cluster variable. To request a clustered standard error other than at `ivar` level. Recommended with RC.
+  - `tvar(varname)` or `time(varname)`: Required, Time variable. There are two ways to call it for compatability with `csdid`.
+  - `gvar(varname)`: Group variable. Indicates the timing of when a unit has ben treated.
+  - `trtvar(varname)`: If using Panel data, one could instead provide the post-treatment dummy.
+  	- If data is repeated crossection, one requires using `trgvar(varname)` (Pseudo panel indicator).
+
+## Extra Options
+
+- `group`: Requests using group fixed effects, instead of individual fixed effects (default)
+- `never`: Request to use alternative specification that allows to test for PTA. (default is to use the standard specification)
+- Linear and Nonlinear models:
+  - `method(command, options)`: Request to use a specific method to model the data. Default is using linear regression via `reghdfe`. 
+  - the option part allows you do include specific options for the method. (e.g. `method(logit, robust)`)
+
+## Example 1: Min Wages on Employment CS data {.scrollable}
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+clear all
+qui:ssc install frause
+qui:frause mpdta, clear
+frause mpdta, clear
+jwdid lemp, ivar(county) tvar(year) gvar(first)
+```
 
 ## Conclusion
