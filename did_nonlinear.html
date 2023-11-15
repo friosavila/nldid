@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="did_nonlinear_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="did_nonlinear_files/libs/clipboard/clipboard.min.js"></script>
 <script src="did_nonlinear_files/libs/quarto-html/tabby.min.js"></script>
 <script src="did_nonlinear_files/libs/quarto-html/popper.min.js"></script>
 <script src="did_nonlinear_files/libs/quarto-html/tippy.umd.min.js"></script>
@@ -8,7 +8,7 @@
 <link href="did_nonlinear_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.450">
+  <meta name="generator" content="quarto-1.4.455">
 
   <meta name="author" content="Fernando Rios-Avila">
   <title>Nonlinear DID:</title>
@@ -31,7 +31,7 @@
     }
     /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -94,8 +94,29 @@
     code span.va { color: #111111; } /* Variable */
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="did_nonlinear_files/libs/revealjs/dist/theme/quarto.css">
+  <link rel="stylesheet" href="styles.css">
   <link href="did_nonlinear_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="did_nonlinear_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="did_nonlinear_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -221,7 +242,8 @@
   }
 
   .callout.callout-titled .callout-body > .callout-content > :last-child {
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
   }
 
   .callout.callout-titled .callout-icon::before {
@@ -384,6 +406,9 @@
       margin-right: 0; 
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -426,7 +451,7 @@ Fernando Rios-Avila
 <li>Because the Canonical design is rather limited, many extensions have been proposed to handle more complex scenarios: Staggered Treatment with <strong>GxT DID</strong>.
 <ul>
 <li>Early Extensions (infamous TWFE) have been shown to be problematic. (negative weights and bad controls)</li>
-<li>but more recent approaches (See Roth and Sant’Anna 2023) have shown how can one better use these designs to identify treatment effects, avoiding the simple-TWFE problems.</li>
+<li>but more recent approaches (See <span class="citation" data-cites="roth_whats_2023">Roth et al. (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span>) have shown how can one better use these designs to identify treatment effects, avoiding the simple-TWFE problems.</li>
 </ul></li>
 <li>Linear models, however, have limitations:
 <ul>
@@ -450,6 +475,7 @@ Fernando Rios-Avila
 <li><p>Among others, Andrew showed the problems of using TWFE in the presence of staggered adoption of the treatment.</p></li>
 <li><p>Because of treatment timing, later treated units are compared to <strong>bad</strong> controls (early treated ones), in potential violation of the parallel trends assumption.</p></li>
 <li><p>This also relates to negative weights.</p></li>
+<li><p>See <span class="citation" data-cites="goodmanbacon2021">Goodman-Bacon (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span></p></li>
 </ul>
 </div>
 </div>
@@ -464,6 +490,7 @@ Fernando Rios-Avila
 <li><p>Pedro and Brantly proposed deconstructing the GxT problem. Consider only good 2x2 DD designs to identify Treatment effects in DID.</p></li>
 <li><p>Agregate them as needed to obtain the desired treatment effect (weighted Average). (dynamic, average, across time, across groups, etc)</p></li>
 <li><p>Along with <strong>Jonathan Roth</strong>, discuss the problem of PTA and functional forms. Not all may be valid.</p></li>
+<li><p>see <span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> and <span class="citation" data-cites="rothsantanna2023">Roth and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span></p></li>
 </ul>
 </div>
 </div>
@@ -481,6 +508,7 @@ Fernando Rios-Avila
 <li>(<span class="math inline">\(post \times treated\)</span> instead of <span class="math inline">\(G \times T\)</span>)</li>
 </ul></li>
 <li>This insights, can be extended to nonlinear cases.</li>
+<li>See <span class="citation" data-cites="wooldridge_2021">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> and <span class="citation" data-cites="wooldridge_2023">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span></li>
 </ul>
 </div>
 </div>
@@ -499,8 +527,7 @@ Fernando Rios-Avila
 </ul></li>
 <li>And today, I will be providing some of my insights regarding the empirical analysis of nonlinear DID.
 <ul>
-<li>I will rely heavily on <a href="https://academic.oup.com/ectj/article/26/3/C31/7250479">Wooldridge(2023)</a>,</li>
-<li>and to some extent on <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA19402">Roth and Sant’Anna (2023)</a></li>
+<li>I will rely heavily on <a href="https://academic.oup.com/ectj/article/26/3/C31/7250479"><span class="citation" data-cites="wooldridge_2023">Wooldridge (<span>2023</span>)</span></a>,</li>
 </ul></li>
 </ul>
 </div>
@@ -525,7 +552,7 @@ Fernando Rios-Avila
 </section>
 <section id="section-1" class="slide level2">
 <h2></h2>
-<p>If treatment occured at some point between T0 and T1, the estimate of interested, Average Treatment effect, could be estimated as follows:</p>
+<p>If treatment occured at some point between T0 and T1, and we could observe all potential outcomes, the estimate of interested, Average Treatment effect, could be estimated as follows:</p>
 <p><span class="math display">\[ATT = E(Y_{i,1}(1) - Y_{i,1}(0)|D_i=1)
 \]</span></p>
 <p>For the treated, we observe <span class="math inline">\(Y_{i,1}(1)\)</span>, but cannot observe <span class="math inline">\(Y_{i,t}(0)\)</span> (counterfactual), thus, to identify Treatment Effects, we need to impose some assumptions.</p>
@@ -572,14 +599,14 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <ul>
 <li>If there is no anticipation, and Parallel trends hold, then <span class="math inline">\(ATT(T)=0 \text{ if } T&lt;G\)</span>
 <ul>
-<li>This is what <span class="citation" data-cites="callaway2021">@callaway2021</span> uses for PTA testing</li>
+<li>This is what <span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> uses for PTA testing</li>
 </ul></li>
 </ul>
 </section>
 <section id="how-to-test-for-pta-1" class="slide level2">
-<h2>How to test for PTA</h2>
+<h2>How to test for PTA?</h2>
 <ul>
-<li>Alternatively, one could simply estimate all ATT’s using period G-1 as baseline period:</li>
+<li>Alternatively, one could simply estimate all ATT’s using period G-1 as baseline period (<code>long2</code> differences):</li>
 </ul>
 <p><span class="math display">\[ATT^2(T) = E(Y_{i,T} - Y_{i,G-1}|D_i=1) - E(Y_{i,T} - Y_{i,G-1}|D_i=0)
 \]</span></p>
@@ -595,7 +622,7 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <div class="tab-content">
 <div id="tabset-1-1">
 <ul>
-<li><p>As suggested by Wooldridge (2023), one of the reasons PTA may not hold is because we may be analyzing the wrong model.</p>
+<li><p>As suggested by <span class="citation" data-cites="wooldridge_2023">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span>, one of the reasons PTA may not hold is because we may be analyzing the wrong model.</p>
 <ul>
 <li>consider two groups of workers, high and low earners, that experience the same wage growth. (parallel trends in relative terms)</li>
 <li>If we observe wages at levels, parallel trends would be violated</li>
@@ -604,44 +631,9 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 </ul>
 </div>
 <div id="tabset-1-2">
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1"></a>*| output: false</span>
-<span id="cb1-2"><a href="#cb1-2"></a>*| echo: false</span>
-<span id="cb1-3"><a href="#cb1-3"></a>*| fig-align: <span class="bn">center</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a> </span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">set</span> <span class="dv">scheme</span> white2</span>
-<span id="cb1-6"><a href="#cb1-6"></a>color_style tableau</span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">clear</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">set</span> <span class="kw">obs</span> 20</span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">gen</span> y1 = 10</span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">gen</span> y2 = 30</span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">replace</span> y1 = y1[<span class="dt">_n</span>-1]*(1.02 + (<span class="dt">_n</span>&gt;11)*0.03) <span class="kw">if</span> <span class="dt">_n</span>&gt;1</span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">replace</span> y2 = y2[<span class="dt">_n</span>-1]*1.02 <span class="kw">if</span> <span class="dt">_n</span>&gt;1</span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="fu">scalar</span> yy1 = y1[11]</span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="fu">scalar</span> yy2 = y2[11]</span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="kw">replace</span> y1=y1-yy1</span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">replace</span> y2=y2-yy2</span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="kw">gen</span> t =<span class="dt">_n</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">gen</span> dy = y1 - y2</span>
-<span id="cb1-20"><a href="#cb1-20"></a><span class="kw">scatter</span> y1 y2 dy t, <span class="kw">connect</span>(<span class="ot">l</span> <span class="ot">l</span> <span class="ot">l</span>) <span class="co">///</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a><span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Low earner"</span> 2 <span class="st">"High earner"</span> 3 <span class="st">"DID"</span>))</span>
-<span id="cb1-22"><a href="#cb1-22"></a></span>
-<span id="cb1-23"><a href="#cb1-23"></a><span class="kw">graph</span> <span class="kw">export</span> fig1.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img data-src="fig1.png" width="1000"></p>
 </div>
 <div id="tabset-1-3">
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb2-1"><a href="#cb2-1"></a>*| output: false</span>
-<span id="cb2-2"><a href="#cb2-2"></a>*| echo: false</span>
-<span id="cb2-3"><a href="#cb2-3"></a>*| fig-align: <span class="bn">center</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">gen</span> lny2=<span class="fu">ln</span>(y2+yy2) - <span class="fu">ln</span>(yy2) </span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">gen</span> lny1=<span class="fu">ln</span>(y1+yy1) - <span class="fu">ln</span>(yy1)</span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">gen</span> dly = lny1 - lny2</span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">replace</span>  lny2=lny2-0.01</span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="kw">scatter</span> lny1 lny2 dly t, <span class="kw">connect</span>(<span class="ot">l</span> <span class="ot">l</span> <span class="ot">l</span>) <span class="co">///</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="bn">legend</span>(<span class="kw">order</span>(1 <span class="st">"Low earner"</span> 2 <span class="st">"High earner"</span> 3 <span class="st">"DID"</span>)) <span class="co">///</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="bn">xsize</span>(12) <span class="bn">ysize</span>(8)</span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="kw">graph</span> <span class="kw">export</span> fig2.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img data-src="fig2.png" width="1000"></p>
 </div>
 </div>
@@ -652,11 +644,12 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <p>A similar story could be told about other types of transformations.</p>
 <p>In general, it is possible that PTA hold for some other monotonic transformation of the outcome variable.</p>
 <p><span class="math display">\[G^{-1}\Big( E_1 [Y_{i,1}(0)] \Big) -G^{-1}\Big(E_1[ Y_{i,0}(0) ] \Big)  
-= G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)\]</span></p>
+= G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)
+\]</span></p>
 <p>This is very similar to the PTA assumption explored in Roth and Sant’Anna (2023).</p>
 <p><span class="math display">\[E_1\Big[g(Y_{i,1}(0))\Big] - E_1\Big[g(Y_{i,0}(0))\Big] = E_0\Big[g(Y_{i,1})\Big] - E_0\Big[g(Y_{i,0})\Big]
 \]</span></p>
-<p>Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the latent index.</p>
+<p>Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the <strong>latent index</strong>.</p>
 </section>
 <section id="how-do-things-change" class="slide level2">
 <h2>How do things Change?</h2>
@@ -673,7 +666,6 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <li>For the practitioner, the extended Nonlinear DID simply requires choosing a functional form that better fits the data.
 <ul>
 <li>Poisson, logit, <del>fractional regression</del>, multinomial model, Linear model, etc</li>
-<li>Although, there is little gain in the simple 2x2 DID design.</li>
 </ul></li>
 </ul>
 </section>
@@ -681,7 +673,7 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <h2>Extension I: Adding Covariates</h2>
 <ul>
 <li><p>Many papers in the literature consider the use of covariates in the estimation of the ATT.</p></li>
-<li><p>The lessons from Sant’Anna and Zhao (2020):</p>
+<li><p>The lessons from <span class="citation" data-cites="santanna_doubly_2020">Sant’Anna and Zhao (<a href="#/references" role="doc-biblioref" onclick="">2020</a>)</span>:</p>
 <ul>
 <li>The choosen covariates should be time fixed, to avoid contamination of the treatment effect.</li>
 <li>Using covariates allows relaxing the parallel trends assumption: PTA hold for specific groups of individuals. (if not for the whole population due to compositional changes)</li>
@@ -709,6 +701,8 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <li>Treatment is not Reversable: Once treated always treated</li>
 </ul></li>
 </ul>
+<p><strong>NOTE</strong>: Because of the interactions required, adding covariates would rapidily “consume” degrees of freedom. (may be a problem with nonlinear models).</p>
+<p>How to see this? <code>--&gt; tab tvar gvar</code></p>
 </section>
 <section id="section-4" class="slide level2">
 <h2></h2>
@@ -720,10 +714,10 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <ul>
 <li>This model has been shown to be problematic, because of How OLS estimates the <span class="math inline">\(\theta^{fe}\)</span> parameter.
 <ul>
-<li><span class="math inline">\(\theta^{fe}\)</span> is a weighted average of all possible 2x2 DID designs.</li>
+<li><span class="math inline">\(\theta^{fe}\)</span> is a weighted average of all possible 2x2 DID designs. <span class="citation" data-cites="goodmanbacon2021">Goodman-Bacon (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span></li>
 <li>Some designs use early treated units as controls for late treated units, which might be a violation of the parallel trends assumption.
 <ul>
-<li>(treated units effectively receiving negative weights) <span class="citation" data-cites="goodmanbacon2021">@goodmanbacon2021</span>, <span class="citation" data-cites="dechaisemartin2020">@dechaisemartin2020</span> and <span class="citation" data-cites="borusyak2023revisiting">@borusyak2023revisiting</span></li>
+<li>(treated units effectively receiving negative weights) <span class="citation" data-cites="goodmanbacon2021">Goodman-Bacon (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span>, <span class="citation" data-cites="dechaisemartin2020">Chaisemartin and D’Haultfœuille (<a href="#/references" role="doc-biblioref" onclick="">2020</a>)</span> and <span class="citation" data-cites="borusyak2023revisiting">Borusyak, Jaravel, and Spiess (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span>.</li>
 </ul></li>
 </ul></li>
 </ul>
@@ -732,26 +726,26 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <h2></h2>
 <h3 id="avoiding-the-problem">Avoiding the Problem</h3>
 <ul>
-<li><p><span class="citation" data-cites="callaway2021">@callaway2021</span> proposes a simple solution: Deconstruct the problem into smaller pieces (2x2 DIDs), and aggregate them as needed.</p></li>
-<li><p><span class="citation" data-cites="wooldridge2022">@wooldridge2022</span>, however, proposes a different solution: Use the correct functional form to estimate the ATTs.</p></li>
+<li><p><span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> proposes a simple solution: Deconstruct the problem into smaller pieces (2x2 DIDs), and aggregate them as needed.</p></li>
+<li><p><span class="citation" data-cites="wooldridge_2021">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span>, however, proposes a different solution: Use the correct functional form to estimate the ATTs.</p></li>
 </ul>
 <p><span class="math display">\[\text{Instead of: }Y_{i,t} = \delta_i + \gamma_t  + \theta^{fe} PT_{i,t} + \epsilon_{i,t}\]</span></p>
 <p><span class="math display">\[\text{Use: }Y_{i,t} = \delta_i + \gamma_t  + \sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}\]</span></p>
 <ul>
-<li>Both of them suggest, embrace heterogeneity across time and cohorts.</li>
+<li>Their Message: Embrace heterogeneity across time and cohorts.</li>
 </ul>
 </section>
 <section id="an-added-insight" class="slide level2">
 <h2>An added Insight</h2>
 <ul>
-<li><p>The approach proposed by <span class="citation" data-cites="wooldridge2022">@wooldridge2022</span>, is more efficient than <span class="citation" data-cites="callaway2021">@callaway2021</span>, because it uses all pre-treatment data to estimate the ATTs. (<span class="citation" data-cites="callaway2021">@callaway2021</span> uses only one pre-treatment data from the treated)</p></li>
-<li><p>However, doing this doesnt allow you to test for PTA directly, unless we use an alternative approach:</p></li>
+<li><p>The approach proposed by <span class="citation" data-cites="wooldridge_2021">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span>, is more efficient than <span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span>, because it uses all pre-treatment data to estimate the ATTs. (<span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> uses only one pre-treatment period)</p></li>
+<li><p>However, doing this doesn’t allow you to test for PTA directly, unless we use an alternative approach:</p></li>
 </ul>
 <p><span class="math display">\[Y_{i,t} = \delta_i + \gamma_t  +
 \sum_{g \in \mathbb{G}} \sum_{t=t_0}^{g-2} \theta_{g,t}^{pre} \mathbb{1}(G=g,T=t) +
 \sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t}^{post} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}\]</span></p>
 <ul>
-<li>This specification is equivalent to <span class="citation" data-cites="callaway2021">@callaway2021</span> and to <span class="citation" data-cites="sunabraham2021">@sunabraham2021</span>.
+<li>This specification is equivalent to <span class="citation" data-cites="callaway_2021">Callaway and Sant’Anna (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> and to <span class="citation" data-cites="sun_estimating_2021">Sun and Abraham (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span>.
 <ul>
 <li>Its explicily a regression (Wooldridge)</li>
 <li>and uses actual, instead of relative, time.</li>
@@ -761,16 +755,16 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <section id="implementing-nl-did-the-jw-way" class="slide level2">
 <h2>Implementing NL-DID the <code>JW</code> way</h2>
 <ul>
-<li>One of the advantages of the approaches proposed by <span class="citation" data-cites="wooldridge2">@wooldridge2</span> and wooldridge2023, is that they can be directly estimated using regressions.</li>
+<li>One of the advantages of the approaches proposed by <span class="citation" data-cites="wooldridge_2021">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> and <span class="citation" data-cites="wooldridge_2023">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span>, is that they can be directly estimated using regressions.</li>
 <li>The hard part is to construct all the interactions required for the model to work.</li>
-<li>And a second challenge is to decide how to aggregate the results.</li>
+<li>And a second challenge is to aggregate the results.</li>
 </ul>
 <p><strong><code>jwdid</code></strong></p>
 <ul>
 <li><p><code>jwdid</code> is a simple command that helps with the construction of all required interactions that could be used to implement Wooldridge approach.</p></li>
 <li><p>It is flexible enough, in that it allows you to choose different estimators that would better fit your data.</p></li>
 <li><p>it comes with its own post estimation commands that can help you aggregate the results into simple ATT, dynamics effects, across periods, across years, etc.</p></li>
-<li><p>Lets take it for a Sin</p></li>
+<li><p>Lets take it for a spin</p></li>
 </ul>
 </section>
 <section id="command-syntax" class="slide level2">
@@ -807,18 +801,18 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <li>Linear and Nonlinear models:
 <ul>
 <li><code>method(command, options)</code>: Request to use a specific method to model the data. Default is using linear regression via <code>reghdfe</code>.</li>
-<li>the option part allows you do include specific options for the method. (e.g.&nbsp;<code>method(logit, robust)</code>)</li>
+<li>the option part allows you do include specific options for the method. (e.g.&nbsp;<code>method(glm, link() family())</code>)</li>
 </ul></li>
 </ul>
 </section>
 <section id="example-1-min-wages-on-employment-cs-data" class="slide level2 scrollable">
 <h2>Example 1: Min Wages on Employment CS data</h2>
-<div class="cell larger" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="true"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">qui</span>:<span class="kw">ssc</span> install frause</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">qui</span>:frause mpdta, <span class="kw">clear</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>frause mpdta, <span class="kw">clear</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>jwdid lemp, ivar(county) tvar(<span class="fu">year</span>) gvar(first)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="37d4a296" class="cell larger" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">qui</span>:<span class="kw">ssc</span> install frause</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">qui</span>:frause mpdta, <span class="kw">clear</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>frause mpdta, <span class="kw">clear</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>jwdid lemp, ivar(county) tvar(<span class="fu">year</span>) gvar(first)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(Written by R.              )
 WARNING: Singleton observations not dropped; statistical significance is biased
@@ -857,16 +851,351 @@ Absorbed degrees of freedom:
  Absorbed FE | Categories  - Redundant  = Num. Coefs |
 -------------+---------------------------------------|
   countyreal |       500         500           0    *|
-        year |         5           1           4     |
+        year |         5           0           5     |
 -----------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation</code></pre>
+</div>
+</div>
+<div id="0b46821b" class="cell larger" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">gen</span> emp = <span class="fu">exp</span>(lemp)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>jwdid emp, ivar(county) tvar(<span class="fu">year</span>) gvar(first) method(<span class="kw">poisson</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Iteration 0:   log pseudolikelihood = -2980537.4  
+Iteration 1:   log pseudolikelihood = -2980526.5  
+Iteration 2:   log pseudolikelihood = -2980526.5  
+
+Poisson regression                                      Number of obs =  2,500
+                                                        Wald chi2(14) = 225.38
+Log pseudolikelihood = -2980526.5                       Prob &gt; chi2   = 0.0000
+
+                           (Std. err. adjusted for 500 clusters in countyreal)
+------------------------------------------------------------------------------
+             |               Robust
+         emp | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ first_treat#|
+        year#|
+    c.__tr__ |
+  2004 2004  |  -.0080499   .0100858    -0.80   0.425    -.0278177    .0117178
+  2004 2005  |  -.0252131   .0176754    -1.43   0.154    -.0598562    .0094299
+  2004 2006  |   -.051965   .0197745    -2.63   0.009    -.0907222   -.0132077
+  2004 2007  |  -.0672208   .0192207    -3.50   0.000    -.1048926    -.029549
+  2006 2006  |    .055212   .0330023     1.67   0.094    -.0094714    .1198954
+  2006 2007  |   .0109993     .04294     0.26   0.798    -.0731617    .0951602
+  2007 2007  |   -.060675   .0149793    -4.05   0.000    -.0900339   -.0313161
+             |
+ first_treat |
+       2004  |   .4789133   .4347691     1.10   0.271    -.3732184    1.331045
+       2006  |   .6010118   .3248861     1.85   0.064    -.0357532    1.237777
+       2007  |   .1269293   .2472938     0.51   0.608    -.3577576    .6116163
+             |
+        year |
+       2004  |  -.0459369   .0064592    -7.11   0.000    -.0585966   -.0332771
+       2005  |  -.0301284   .0094457    -3.19   0.001    -.0486416   -.0116152
+       2006  |  -.0030985   .0122001    -0.25   0.800    -.0270104    .0208133
+       2007  |   .0350031   .0118264     2.96   0.003     .0118238    .0581824
+             |
+       _cons |    6.84775   .1555219    44.03   0.000     6.542932    7.152567
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="471dff6f" class="cell larger" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1"></a>jwdid emp, ivar(county) tvar(<span class="fu">year</span>) gvar(first) method(<span class="kw">poisson</span>) never</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Iteration 0:   log pseudolikelihood = -2980450.1  
+Iteration 1:   log pseudolikelihood = -2980438.8  
+Iteration 2:   log pseudolikelihood = -2980438.8  
+
+Poisson regression                                      Number of obs =  2,500
+                                                        Wald chi2(19) = 262.50
+Log pseudolikelihood = -2980438.8                       Prob &gt; chi2   = 0.0000
+
+                           (Std. err. adjusted for 500 clusters in countyreal)
+------------------------------------------------------------------------------
+             |               Robust
+         emp | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ first_treat#|
+        year#|
+    c.__tr__ |
+  2004 2004  |  -.0063802   .0111509    -0.57   0.567    -.0282356    .0154752
+  2004 2005  |   -.027483   .0190781    -1.44   0.150    -.0648753    .0099094
+  2004 2006  |  -.0641446   .0224733    -2.85   0.004    -.1081913   -.0200978
+  2004 2007  |  -.0704859   .0204208    -3.45   0.001    -.1105099   -.0304619
+  2006 2003  |  -.0081647   .0366458    -0.22   0.824     -.079989    .0636597
+  2006 2004  |  -.0289763   .0258763    -1.12   0.263    -.0796929    .0217403
+  2006 2006  |   .0310817   .0186723     1.66   0.096    -.0055153    .0676788
+  2006 2007  |  -.0042165   .0335939    -0.13   0.900    -.0700593    .0616263
+  2007 2003  |   .0358582   .0236868     1.51   0.130    -.0105671    .0822835
+  2007 2004  |   .0517571   .0164417     3.15   0.002      .019532    .0839822
+  2007 2005  |   .0237174   .0112134     2.12   0.034     .0017395    .0456952
+  2007 2007  |  -.0329817    .009941    -3.32   0.001    -.0524657   -.0134976
+             |
+ first_treat |
+       2004  |   .4821784   .4354246     1.11   0.268    -.3712381    1.335595
+       2006  |   .6162276   .3252255     1.89   0.058    -.0212028    1.253658
+       2007  |    .099236    .244468     0.41   0.685    -.3799124    .5783844
+             |
+        year |
+       2004  |  -.0476066   .0080213    -5.94   0.000     -.063328   -.0318852
+       2005  |  -.0278586   .0118649    -2.35   0.019    -.0511134   -.0046038
+       2006  |    .009081    .016213     0.56   0.575    -.0226959     .040858
+       2007  |   .0382682   .0136908     2.80   0.005     .0114347    .0651017
+             |
+       _cons |   6.844485   .1573451    43.50   0.000     6.536094    7.152875
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</section>
+<section id="example-1-aggregations" class="slide level2 scrollable">
+<h2>Example 1: Aggregations</h2>
+<div id="6680453a" class="cell larger" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">estat</span> event</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------------------------------------------------------------------------------
+             |            Delta-method
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __event__ |
+         -4  |   37.84578   27.92442     1.36   0.175    -16.88508    92.57665
+         -3  |   36.91665   23.13761     1.60   0.111     -8.43224    82.26554
+         -2  |   7.462364   14.88422     0.50   0.616    -21.71018    36.63491
+         -1  |          0  (omitted)
+          0  |  -13.33389   12.32746    -1.08   0.279    -37.49527    10.82749
+          1  |  -18.42686   40.35552    -0.46   0.648    -97.52222     60.6685
+          2  |   -95.3188   36.54186    -2.61   0.009    -166.9395   -23.69806
+          3  |  -107.5067   44.45653    -2.42   0.016    -194.6399   -20.37347
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="986ee7fc" class="cell larger" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">estat</span> <span class="fu">group</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------------------------------------------------------------------------------
+             |            Delta-method
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __group__ |
+       2004  |  -63.03151   28.14208    -2.24   0.025     -118.189   -7.874052
+       2006  |   23.89072   46.37715     0.52   0.606    -67.00682    114.7883
+       2007  |  -34.94374   13.54265    -2.58   0.010    -61.48686   -8.400625
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="e044e916" class="cell larger" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">estat</span> calendar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>------------------------------------------------------------------------------
+             |            Delta-method
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+__calendar__ |
+       2004  |  -9.219455   15.81277    -0.58   0.560    -40.21192    21.77301
+       2005  |  -40.08113   29.74368    -1.35   0.178    -98.37767    18.21541
+       2006  |   5.147843   33.13277     0.16   0.877     -59.7912    70.08689
+       2007  |  -36.81546   16.84608    -2.19   0.029    -69.83316   -3.797752
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="f1a8e3e6" class="cell larger" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">qui</span>:<span class="kw">estat</span> event, plot</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">graph</span> <span class="kw">export</span> event.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<img data-src="event.png" class="r-stretch"></section>
+<section id="example-2-wooldridge-simulation-data" class="slide level2 scrollable">
+<h2>Example 2: Wooldridge Simulation data</h2>
+<div id="204391f5" class="cell larger" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="kw">qui</span> {</span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="kw">reg</span> <span class="fu">y</span> i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 <span class="co">///</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>    i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x <span class="co">///</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>    f02 f03 f04 f05 f06 <span class="co">///</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>    c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x <span class="co">/// </span></span>
+<span id="cb14-8"><a href="#cb14-8"></a>    <span class="kw">d</span> x c.d#c.x, noomitted <span class="kw">vce</span>(<span class="kw">cluster</span> id)</span>
+<span id="cb14-9"><a href="#cb14-9"></a>  <span class="kw">est</span> sto m1</span>
+<span id="cb14-10"><a href="#cb14-10"></a>}  </span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) <span class="co">///</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond)  <span class="kw">post</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="kw">ereturn</span> <span class="kw">display</span>  </span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="kw">est</span> <span class="kw">restore</span> m1</span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) <span class="co">///</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond) <span class="kw">post</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="kw">ereturn</span> <span class="kw">display</span>  </span>
+<span id="cb14-18"><a href="#cb14-18"></a><span class="kw">est</span> <span class="kw">restore</span> m1</span>
+<span id="cb14-19"><a href="#cb14-19"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) <span class="co">///</span></span>
+<span id="cb14-20"><a href="#cb14-20"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond) <span class="kw">post</span></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="kw">ereturn</span> <span class="kw">display</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0462206   .0367939     1.26   0.209    -.0259816    .1184228
+------------------------------------------------------------------------------
+(results m1 are active now)
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0755069   .0376124     2.01   0.045     .0016985    .1493153
+------------------------------------------------------------------------------
+(results m1 are active now)
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0445457   .0379857     1.17   0.241    -.0299952    .1190866
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<p>Using <code>jwdid</code>:</p>
+<div id="a708ceb2" class="cell larger" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="kw">qui</span>: jwdid <span class="fu">y</span> x, ivar(id) tvar(<span class="fu">year</span>) trtvar(<span class="fu">w</span>) method(<span class="kw">regress</span>)</span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="kw">estat</span> event, <span class="kw">vce</span>(unconditional)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      t    P&gt;|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __event__ |
+          0  |   .0462206   .0367939     1.26   0.209    -.0259816    .1184228
+          1  |   .0755069   .0376124     2.01   0.045     .0016985    .1493153
+          2  |   .0445457   .0379857     1.17   0.241    -.0299952    .1190866
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<p><strong>Using Logit</strong></p>
+<div id="a2208b6b" class="cell larger" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="kw">qui</span> {</span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">logit</span> <span class="fu">y</span> i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 <span class="co">///</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>    i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x <span class="co">///</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>    f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x <span class="co">///</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>    <span class="kw">d</span> x c.d#c.x, noomitted <span class="kw">vce</span>(<span class="kw">cluster</span> id)</span>
+<span id="cb18-8"><a href="#cb18-8"></a>  <span class="kw">est</span> <span class="kw">store</span> m1</span>
+<span id="cb18-9"><a href="#cb18-9"></a>}  </span>
+<span id="cb18-10"><a href="#cb18-10"></a></span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) <span class="co">///</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond)  <span class="kw">post</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="kw">ereturn</span> <span class="kw">display</span>  </span>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="kw">est</span> <span class="kw">restore</span> m1</span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) <span class="co">///</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond) <span class="kw">post</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="kw">ereturn</span> <span class="kw">display</span>  </span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="kw">est</span> <span class="kw">restore</span> m1</span>
+<span id="cb18-19"><a href="#cb18-19"></a><span class="kw">qui</span>:margins, <span class="kw">dydx</span>(<span class="fu">w</span>) <span class="fu">at</span>(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) <span class="co">///</span></span>
+<span id="cb18-20"><a href="#cb18-20"></a>    subpop(<span class="kw">if</span> <span class="kw">d</span> == 1) noestimcheck <span class="kw">vce</span>(uncond) <span class="kw">post</span></span>
+<span id="cb18-21"><a href="#cb18-21"></a><span class="kw">ereturn</span> <span class="kw">display</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+------------------------------------------------------------------------------
+(results m1 are active now)
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+------------------------------------------------------------------------------
+(results m1 are active now)
+                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         1.w |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<p>Using <code>jwdid</code>:</p>
+<div id="22118919" class="cell larger" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="kw">qui</span>: jwdid <span class="fu">y</span> x, ivar(id) tvar(<span class="fu">year</span>) trtvar(<span class="fu">w</span>) method(<span class="kw">logit</span>)</span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="kw">estat</span> event, <span class="kw">vce</span>(unconditional)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 (Std. err. adjusted for 1,000 clusters in id)
+------------------------------------------------------------------------------
+             |            Unconditional
+             | Coefficient  std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+   __event__ |
+          0  |   .0886639   .0326848     2.71   0.007     .0246029    .1527249
+          1  |   .1217999   .0355845     3.42   0.001     .0520556    .1915441
+          2  |   .1073639   .0371242     2.89   0.004     .0346018    .1801261
+------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
 </section>
 <section id="conclusion" class="slide level2">
 <h2>Conclusion</h2>
+<ul>
+<li>DID is a popular method for analyzing policy interventions.</li>
+<li>Thanks to the contributions of Wooldridge, Roth and Sant’Anna among others, we have a better understanding of how to implement DID in more complex scenarios.</li>
+<li>One of this important extensions is the use of nonlinear models to better fit the data, and better estimate treatment effects.</li>
+<li>The <code>jwdid</code> command is a simple tool that can help you implement the Wooldridge approach to nonlinear DID.</li>
+</ul>
+</section></section>
+<section>
+<section id="thank-you" class="title-slide slide level1 center">
+<h1>Thank you</h1>
+<p>If interested in other work of mine,</p>
+<p>Visit my <a href="https://friosavila.github.io/">website</a></p>
+<p>Follow me on <a href="https://twitter.com/friosavila">twitter</a></p>
+<p>or use my <a href="https://github.com/friosavila/stpackages">Stata packages</a></p>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
 <div class="footer footer-default">
 
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-borusyak2023revisiting" class="csl-entry" role="listitem">
+Borusyak, Kirill, Xavier Jaravel, and Jann Spiess. 2023. <span>“Revisiting Event Study Designs: Robust and Efficient Estimation.”</span> <a href="https://arxiv.org/abs/2108.12419">https://arxiv.org/abs/2108.12419</a>.
+</div>
+<div id="ref-callaway_2021" class="csl-entry" role="listitem">
+Callaway, Brantly, and Pedro H. C. Sant’Anna. 2021. <span>“Difference-in-<span>Differences</span> with Multiple Time Periods.”</span> <em>Journal of Econometrics</em>, Themed <span>Issue</span>: <span>Treatment</span> <span>Effect</span> 1, 225 (2): 200–230. <a href="https://doi.org/10.1016/j.jeconom.2020.12.001">https://doi.org/10.1016/j.jeconom.2020.12.001</a>.
+</div>
+<div id="ref-dechaisemartin2020" class="csl-entry" role="listitem">
+Chaisemartin, Clément de, and Xavier D’Haultfœuille. 2020. <span>“Two-Way Fixed Effects Estimators with Heterogeneous Treatment Effects.”</span> <em>American Economic Review</em> 110 (9): 2964–96. <a href="https://doi.org/10.1257/aer.20181169">https://doi.org/10.1257/aer.20181169</a>.
+</div>
+<div id="ref-goodmanbacon2021" class="csl-entry" role="listitem">
+Goodman-Bacon, Andrew. 2021. <span>“Difference-in-Differences with Variation in Treatment Timing.”</span> <em>Journal of Econometrics</em> 225 (2): 254–77. https://doi.org/<a href="https://doi.org/10.1016/j.jeconom.2021.03.014">https://doi.org/10.1016/j.jeconom.2021.03.014</a>.
+</div>
+<div id="ref-rothsantanna2023" class="csl-entry" role="listitem">
+Roth, Jonathan, and Pedro H. C. Sant’Anna. 2023. <span>“<span class="nocase">When Is Parallel Trends Sensitive to Functional Form?</span>”</span> <em>Econometrica</em> 91 (2): 737–47. <a href="https://doi.org/10.3982/ECTA19402">https://doi.org/10.3982/ECTA19402</a>.
+</div>
+<div id="ref-roth_whats_2023" class="csl-entry" role="listitem">
+Roth, Jonathan, Pedro H. C. Sant’Anna, Alyssa Bilinski, and John Poe. 2023. <span>“What’s Trending in Difference-in-Differences? <span>A</span> Synthesis of the Recent Econometrics Literature.”</span> <em>Journal of Econometrics</em> 235 (2): 2218–44. <a href="https://doi.org/10.1016/j.jeconom.2023.03.008">https://doi.org/10.1016/j.jeconom.2023.03.008</a>.
+</div>
+<div id="ref-santanna_doubly_2020" class="csl-entry" role="listitem">
+Sant’Anna, Pedro H. C., and Jun Zhao. 2020. <span>“Doubly Robust Difference-in-Differences Estimators.”</span> <em>Journal of Econometrics</em> 219 (1): 101–22. <a href="https://doi.org/10.1016/j.jeconom.2020.06.003">https://doi.org/10.1016/j.jeconom.2020.06.003</a>.
+</div>
+<div id="ref-sun_estimating_2021" class="csl-entry" role="listitem">
+Sun, Liyang, and Sarah Abraham. 2021. <span>“Estimating Dynamic Treatment Effects in Event Studies with Heterogeneous Treatment Effects.”</span> <em>Journal of Econometrics</em>, Themed <span>Issue</span>: <span>Treatment</span> <span>Effect</span> 1, 225 (2): 175–99. <a href="https://doi.org/10.1016/j.jeconom.2020.09.006">https://doi.org/10.1016/j.jeconom.2020.09.006</a>.
+</div>
+<div id="ref-wooldridge_2021" class="csl-entry" role="listitem">
+Wooldridge, Jeffrey M. 2021. <span>“Two-<span>Way</span> <span>Fixed</span> <span>Effects</span>, the <span>Two</span>-<span>Way</span> <span>Mundlak</span> <span>Regression</span>, and <span>Difference</span>-in-<span>Differences</span> <span>Estimators</span>.”</span> <em>SSRN Journal</em>. <a href="https://doi.org/10.2139/ssrn.3906345">https://doi.org/10.2139/ssrn.3906345</a>.
+</div>
+<div id="ref-wooldridge_2023" class="csl-entry" role="listitem">
+———. 2023. <span>“Simple Approaches to Nonlinear Difference-in-Differences with Panel Data.”</span> <em>The Econometrics Journal</em> 26 (3): C31–66. <a href="https://doi.org/10.1093/ectj/utad016">https://doi.org/10.1093/ectj/utad016</a>.
+</div>
 </div>
 </section></section>
     </div>
@@ -895,7 +1224,6 @@ Absorbed degrees of freedom:
       Reveal.initialize({
 'controlsAuto': true,
 'previewLinksAuto': false,
-'smaller': false,
 'pdfSeparateFragments': false,
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
@@ -1156,10 +1484,9 @@ Absorbed degrees of freedom:
         // clear code selection
         e.clearSelection();
       });
-      function tippyHover(el, contentFn) {
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
-          content: contentFn,
           maxWidth: 500,
           delay: 100,
           arrow: false,
@@ -1169,8 +1496,17 @@ Absorbed degrees of freedom:
           interactive: true,
           interactiveBorder: 10,
           theme: 'light-border',
-          placement: 'bottom-start'
+          placement: 'bottom-start',
         };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
           config['offset'] = [0,0];
           config['maxWidth'] = 700;
         window.tippy(el, config); 

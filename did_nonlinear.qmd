@@ -10,6 +10,9 @@ format:
         width: 1600
         height: 900
         code-fold: false
+        css: styles.css 
+    pdf: default    
+bibliography: did_reg.bib        
 editor: visual    
 jupyter: nbstata
 ---
@@ -27,7 +30,7 @@ jupyter: nbstata
 
 - Because the Canonical design is rather limited, many extensions have been proposed to handle more complex scenarios: Staggered Treatment with **GxT DID**.
   - Early Extensions (infamous TWFE) have been shown to be problematic. (negative weights and bad controls)
-  - but more recent approaches (See Roth and Sant'Anna 2023) have shown how can one better use these designs to identify treatment effects, avoiding the simple-TWFE problems.
+  - but more recent approaches (See @roth_whats_2023) have shown how can one better use these designs to identify treatment effects, avoiding the simple-TWFE problems.
 
 - Linear models, however, have limitations:
   - Linear models do a poor job interpolating and predicting LDV outcomes
@@ -53,6 +56,8 @@ who am I not?
 
 - This also relates to negative weights.
 
+- See @goodmanbacon2021
+
 :::
 
 ::::
@@ -72,6 +77,8 @@ who am I not?
   
 - Along with **Jonathan Roth**, discuss the problem of PTA and functional forms. Not all may be valid.
 
+- see @callaway_2021 and @rothsantanna2023
+  
 :::
 
 ::::
@@ -91,7 +98,8 @@ who am I not?
 - The problem was not the **TWFE** part of the analysis, but the model specification. 
   - ($post \times treated$ instead of $G \times T$)
 - This insights, can be extended to nonlinear cases.
-
+- See @wooldridge_2021 and @wooldridge_2023
+  
 :::
 
 ::::
@@ -111,8 +119,8 @@ who am I not?
   - Implemented few things (`drdid`/`csdid`/`csdid2`/`jwdid`)
   - Understood few others (comparison groups, efficiency, negative weights, nonlinear models)
 - And today, I will be providing some of my insights regarding the empirical analysis of nonlinear DID.
-  - I will rely heavily on [Wooldridge(2023)](https://academic.oup.com/ectj/article/26/3/C31/7250479), 
-  - and to some extent on [Roth and Sant'Anna (2023)](https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA19402)
+  - I will rely heavily on [@wooldridge_2023](https://academic.oup.com/ectj/article/26/3/C31/7250479), 
+  
 
 :::
 
@@ -134,7 +142,7 @@ $$
 
 ## 
 
-If treatment occured at some point between T0 and T1, the estimate of interested, Average Treatment effect, could be estimated as follows:
+If treatment occured at some point between T0 and T1, and we could observe all potential outcomes, the estimate of interested, Average Treatment effect, could be estimated as follows:
 
 $$ATT = E(Y_{i,1}(1) - Y_{i,1}(0)|D_i=1)
 $$
@@ -183,11 +191,11 @@ $$ATT(T) = E(Y_{i,T} - Y_{i,T-1}|D_i=1) - E(Y_{i,T} - Y_{i,T-1}|D_i=0)
 $$
 
 - If there is no anticipation, and Parallel trends hold, then $ATT(T)=0 \text{ if } T<G$ 
-  - This is what @callaway2021 uses for PTA testing
+  - This is what @callaway_2021 uses for PTA testing
 
-## How to test for PTA
+## How to test for PTA?
 
-- Alternatively, one could simply estimate all ATT's using period G-1 as baseline period:
+- Alternatively, one could simply estimate all ATT's using period G-1 as baseline period (`long2` differences):
 
 $$ATT^2(T) = E(Y_{i,T} - Y_{i,G-1}|D_i=1) - E(Y_{i,T} - Y_{i,G-1}|D_i=0)
 $$
@@ -201,7 +209,7 @@ $$
 
 ## What if PTA does not hold?
 
-- As suggested by Wooldridge (2023), one of the reasons PTA may not hold is because we may be analyzing the wrong model.
+- As suggested by @wooldridge_2023, one of the reasons PTA may not hold is because we may be analyzing the wrong model.
 
   - consider two groups of workers, high and low earners, that experience the same wage growth. (parallel trends in relative terms)
   - If we observe wages at levels, parallel trends would be violated
@@ -209,7 +217,7 @@ $$
    
 ## Wage PTA in levels
 
-```stata
+```{stata}
 *| output: false
 *| echo: false
 *| fig-align: center
@@ -239,7 +247,7 @@ graph export fig1.png, replace width(1000)
 
 ## Wage PTA in logs
 
-```stata
+```{stata}
 *| output: false
 *| echo: false
 *| fig-align: center
@@ -266,14 +274,15 @@ A similar story could be told about other types of transformations.
 In general, it is possible that PTA hold for some other monotonic transformation of the outcome variable.
 
 $$G^{-1}\Big( E_1 [Y_{i,1}(0)] \Big) -G^{-1}\Big(E_1[ Y_{i,0}(0) ] \Big)  
-= G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)$$
+= G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)
+$$
 
 This is very similar to the PTA assumption explored in Roth and Sant'Anna (2023).
 
 $$E_1\Big[g(Y_{i,1}(0))\Big] - E_1\Big[g(Y_{i,0}(0))\Big] = E_0\Big[g(Y_{i,1})\Big] - E_0\Big[g(Y_{i,0})\Big]
 $$
 
-Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the latent index.
+Wooldridge idea: It may be possible to identify ATTs using correct functional forms, through the **latent index**.
 
 ## How do things Change?
 
@@ -291,15 +300,16 @@ $$
 
 - For the practitioner, the extended Nonlinear DID simply requires choosing a functional form that better fits the data.
   - Poisson, logit, ~~fractional regression~~, multinomial model, Linear model, etc
-  - Although, there is little gain in the simple 2x2 DID design.
+  
 
 ## Extension I: Adding Covariates
 
 - Many papers in the literature consider the use of covariates in the estimation of the ATT.
   
-- The lessons from Sant'Anna and Zhao (2020):
+- The lessons from @santanna_doubly_2020:
   - The choosen covariates should be time fixed, to avoid contamination of the treatment effect.
   - Using covariates allows relaxing the parallel trends assumption: PTA hold for specific groups of individuals. (if not for the whole population due to compositional changes)
+  
 - In the 2x2 DID-Regression, covariates can be added with interactions:
 
 $$\begin{aligned}
@@ -317,6 +327,10 @@ $$
 - The majority of the papers that analyze this case impose an additional assumption: 
   - Treatment is not Reversable: Once treated always treated
 
+**NOTE**: Because of the interactions required, adding covariates would rapidily "consume" degrees of freedom. (may be a problem with nonlinear models).
+
+How to see this? `--> tab tvar gvar`
+
 ##
 ### The Problem
 
@@ -326,42 +340,42 @@ $$y_{i,t} = \delta_i + \delta_t + \theta^{fe} D_{i,t} + e_{i,t}$$
 where $D_{i,t}=1$ only after treatment is in place, and zero otherwise.
 
 - This model has been shown to be problematic, because of How OLS estimates the $\theta^{fe}$ parameter.
-  - $\theta^{fe}$ is a weighted average of all possible 2x2 DID designs.
+  - $\theta^{fe}$ is a weighted average of all possible 2x2 DID designs. @goodmanbacon2021
   - Some designs use early treated units as controls for late treated units, which might be a violation of the parallel trends assumption. 
-    - (treated units effectively receiving negative weights) @goodmanbacon2021, @dechaisemartin2020 and @borusyak2023revisiting 
+    - (treated units effectively receiving negative weights) @goodmanbacon2021, @dechaisemartin2020 and @borusyak2023revisiting. 
 
 ##
 ### Avoiding the Problem
 
-- @callaway2021 proposes a simple solution: Deconstruct the problem into smaller pieces (2x2 DIDs), and aggregate them as needed.
+- @callaway_2021 proposes a simple solution: Deconstruct the problem into smaller pieces (2x2 DIDs), and aggregate them as needed.
 
-- @wooldridge2022, however, proposes a different solution: Use the correct functional form to estimate the ATTs.
+- @wooldridge_2021, however, proposes a different solution: Use the correct functional form to estimate the ATTs.
 
 $$\text{Instead of: }Y_{i,t} = \delta_i + \gamma_t  + \theta^{fe} PT_{i,t} + \epsilon_{i,t}$$
 
 $$\text{Use: }Y_{i,t} = \delta_i + \gamma_t  + \sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}$$
 
-- Both of them suggest, embrace heterogeneity across time and cohorts.
+- Their Message: Embrace heterogeneity across time and cohorts.
 
 ## An added Insight
 
-- The approach proposed by @wooldridge2022, is more efficient than @callaway2021, because it uses all pre-treatment data to estimate the ATTs. (@callaway2021 uses only one pre-treatment data from the treated)
+- The approach proposed by @wooldridge_2021, is more efficient than @callaway_2021, because it uses all pre-treatment data to estimate the ATTs. (@callaway_2021 uses only one pre-treatment period)
 
-- However, doing this doesnt allow you to test for PTA directly, unless we use an alternative approach:
+- However, doing this doesn't allow you to test for PTA directly, unless we use an alternative approach:
 
 $$Y_{i,t} = \delta_i + \gamma_t  + 
 \sum_{g \in \mathbb{G}} \sum_{t=t_0}^{g-2} \theta_{g,t}^{pre} \mathbb{1}(G=g,T=t) +
 \sum_{g \in \mathbb{G}} \sum_{t=g}^T \theta_{g,t}^{post} \mathbb{1}(G=g,T=t) + \epsilon_{i,t}$$
 
-- This specification is equivalent to @callaway2021 and to @sunabraham2021. 
+- This specification is equivalent to @callaway_2021 and to @sun_estimating_2021. 
   - Its explicily a regression (Wooldridge)
   - and uses actual, instead of relative, time.
  
 ## Implementing NL-DID the `JW` way
 
-- One of the advantages of the approaches proposed by @wooldridge2 and wooldridge2023, is that they can be directly estimated using regressions.
+- One of the advantages of the approaches proposed by @wooldridge_2021 and @wooldridge_2023, is that they can be directly estimated using regressions.
 - The hard part is to construct all the interactions required for the model to work.
-- And a second challenge is to decide how to aggregate the results.
+- And a second challenge is to aggregate the results.
 
 **`jwdid`**
 
@@ -369,7 +383,7 @@ $$Y_{i,t} = \delta_i + \gamma_t  +
 - It is flexible enough, in that it allows you to choose different estimators that would better fit your data.
 - it comes with its own post estimation commands that can help you aggregate the results into simple ATT, dynamics effects, across periods, across years, etc.
 
-- Lets take it for a Sin
+- Lets take it for a spin
 
 ## Command Syntax
 
@@ -393,7 +407,7 @@ $$Y_{i,t} = \delta_i + \gamma_t  +
 - `never`: Request to use alternative specification that allows to test for PTA. (default is to use the standard specification)
 - Linear and Nonlinear models:
   - `method(command, options)`: Request to use a specific method to model the data. Default is using linear regression via `reghdfe`. 
-  - the option part allows you do include specific options for the method. (e.g. `method(logit, robust)`)
+  - the option part allows you do include specific options for the method. (e.g. `method(glm, link() family())`)
 
 ## Example 1: Min Wages on Employment CS data {.scrollable}
 
@@ -409,4 +423,163 @@ frause mpdta, clear
 jwdid lemp, ivar(county) tvar(year) gvar(first)
 ```
 
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+gen emp = exp(lemp)
+jwdid emp, ivar(county) tvar(year) gvar(first) method(poisson) 
+```
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+jwdid emp, ivar(county) tvar(year) gvar(first) method(poisson) never
+```
+
+## Example 1: Aggregations {.scrollable}
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+estat event
+```
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+estat group
+```
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+estat calendar
+```
+
+```{stata}
+*| echo: true
+*| output: false
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+qui:estat event, plot
+graph export event.png, replace width(1000)
+```
+
+![](event.png)
+
+## Example 2: Wooldridge Simulation data {.scrollable}
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+clear all
+use nonlinear_did/did_common_6_binary, clear
+qui {
+reg y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+	i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+	f02 f03 f04 f05 f06 ///
+	c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x /// 
+	d x c.d#c.x, noomitted vce(cluster id)
+  est sto m1
+}  
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+	subpop(if d == 1) noestimcheck vce(uncond)  post
+ereturn display  
+est restore m1
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+	subpop(if d == 1) noestimcheck vce(uncond) post
+ereturn display  
+est restore m1
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+	subpop(if d == 1) noestimcheck vce(uncond) post
+ereturn display	
+```
+Using `jwdid`:
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+clear all
+use nonlinear_did/did_common_6_binary, clear
+qui: jwdid y x, ivar(id) tvar(year) trtvar(w) method(regress)
+estat event, vce(unconditional)
+```
+
+**Using Logit** 
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+clear all
+use nonlinear_did/did_common_6_binary, clear
+qui {
+logit y i.w#c.d#c.f04 i.w#c.d#c.f05 i.w#c.d#c.f06 ///
+	i.w#c.d#c.f04#c.x i.w#c.d#c.f05#c.x i.w#c.d#c.f06#c.x ///
+	f02 f03 f04 f05 f06 c.f02#c.x c.f03#c.x c.f04#c.x c.f05#c.x c.f06#c.x ///
+	d x c.d#c.x, noomitted vce(cluster id)
+  est store m1
+}  
+
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 1 f05 = 0 f06 = 0) ///
+	subpop(if d == 1) noestimcheck vce(uncond)  post
+ereturn display  
+est restore m1
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 1 f06 = 0) ///
+	subpop(if d == 1) noestimcheck vce(uncond) post
+ereturn display  
+est restore m1
+qui:margins, dydx(w) at(f02 = 0 f03 = 0 f04 = 0 f05 = 0 f06 = 1) ///
+	subpop(if d == 1) noestimcheck vce(uncond) post
+ereturn display	
+```
+
+Using `jwdid`:
+
+```{stata}
+*| echo: true
+*| code-line-numbers: true
+*| code-fold: false
+*| classes: larger
+clear all
+use nonlinear_did/did_common_6_binary, clear
+qui: jwdid y x, ivar(id) tvar(year) trtvar(w) method(logit)
+estat event, vce(unconditional)
+```
+
+
 ## Conclusion
+
+- DID is a popular method for analyzing policy interventions.
+- Thanks to the contributions of Wooldridge, Roth and Sant'Anna among others, we have a better understanding of how to implement DID in more complex scenarios.
+- One of this important extensions is the use of nonlinear models to better fit the data, and better estimate treatment effects.
+- The `jwdid` command is a simple tool that can help you implement the Wooldridge approach to nonlinear DID.
+
+
+# Thank you
+
+If interested in other work of mine,
+
+Visit my [website](https://friosavila.github.io/)
+
+Follow me on [twitter](https://twitter.com/friosavila)
+
+or use my [Stata packages](https://github.com/friosavila/stpackages)
+
+## References

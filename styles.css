@@ -1,0 +1,35 @@
+/* css styles */
+.reveal pre.sourceCode code {
+  /* height: 500px; */
+  max-height: 10000px;
+}
+.reveal pre code {
+  /*overflow: visible*/
+  max-height: 10000px;
+} 
+
+.redtxt {
+  /*overflow: visible*/
+  color: red
+}  
+
+.bluetxt {
+  /*overflow: visible*/
+  color: blue;
+}  
+
+.larger {
+  font-size: 1.1em;
+} 
+
+.larger2 {
+  font-size: 1.2em;
+} 
+
+.small90 {
+  font-size: 0.9em;
+} 
+
+.small80 {
+  font-size: 0.8em;
+} 
