@@ -8,7 +8,7 @@
 <link href="did_nonlinear_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="did_nonlinear_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.455">
+  <meta name="generator" content="quarto-1.4.506">
 
   <meta name="author" content="Fernando Rios-Avila">
   <title>Nonlinear DID:</title>
@@ -441,7 +441,11 @@ Fernando Rios-Avila
 </ul></li>
 <li>The canonical DiD, a 2x2 design, simply compares means (or conditional means) of the outcome variable (before after x treated non-treated) to identify treatment effects.
 <ul>
-<li>Thus it can be used even if outcome is a limited dependent variable (binary, count, etc) (parallel to the linear regression case)</li>
+<li>Thus it can be used even if outcome is a limited dependent variable (binary, count, etc)
+<ul>
+<li>Parallel to the linear regression case</li>
+<li>Assumes Linear PTA</li>
+</ul></li>
 </ul></li>
 </ul>
 </section>
@@ -455,8 +459,8 @@ Fernando Rios-Avila
 </ul></li>
 <li>Linear models, however, have limitations:
 <ul>
-<li>Linear models do a poor job interpolating and predicting LDV outcomes</li>
-<li>Parallel trends assumptions may only be credible under specific functional forms</li>
+<li>Linear models do a poor job interpolating and predicting LDV outcomes.</li>
+<li>Parallel trends assumptions may only be credible under specific functional forms.</li>
 </ul></li>
 </ul>
 </section>
@@ -507,7 +511,7 @@ Fernando Rios-Avila
 <ul>
 <li>(<span class="math inline">\(post \times treated\)</span> instead of <span class="math inline">\(G \times T\)</span>)</li>
 </ul></li>
-<li>This insights, can be extended to nonlinear cases.</li>
+<li>This insight can be extended to nonlinear cases.</li>
 <li>See <span class="citation" data-cites="wooldridge_2021">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span> and <span class="citation" data-cites="wooldridge_2023">Wooldridge (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span></li>
 </ul>
 </div>
@@ -590,7 +594,11 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 <h2>How to test for PTA?</h2>
 <ul>
 <li><p>PTA is a non-testable assumption, because we do not observe all potential outcomes.</p></li>
-<li><p>However, if we “move”, from the 2x2 design, it may be possible to test if PTA hold Before treatment.</p></li>
+<li><p>However, if we “move”, from the 2x2 design,</p>
+<ul>
+<li>it may be possible to test if PTA hold Before treatment.</li>
+<li>Or use a DDD design to indirectly test for PTA.</li>
+</ul></li>
 <li><p>Consider a case of T periods of time, and that treatment happen at period G.</p></li>
 <li><p>Say we estimate the ATT comparing periods T and T-1, for any T&lt;G.</p></li>
 </ul>
@@ -639,10 +647,10 @@ ATT &amp;= E(Y_{i,1}(1)|D_i=1)-E(Y_{i,1}(0)|D_i=1) \\
 </div>
 </div>
 </section>
-<section id="pta-may-hold-for-gbar-y" class="slide level2">
-<h2>PTA may hold for <span class="math inline">\(G(\bar Y)\)</span></h2>
+<section id="pta-may-hold-for-g-1bar-y" class="slide level2">
+<h2>PTA may hold for <span class="math inline">\(G^{-1}(\bar Y)\)</span></h2>
 <p>A similar story could be told about other types of transformations.</p>
-<p>In general, it is possible that PTA hold for some other monotonic transformation of the outcome variable.</p>
+<p>In general, it is possible that PTA hold for some monotonic transformation of the outcome variable <span class="math inline">\(G^{-1}()\)</span>.</p>
 <p><span class="math display">\[G^{-1}\Big( E_1 [Y_{i,1}(0)] \Big) -G^{-1}\Big(E_1[ Y_{i,0}(0) ] \Big)  
 = G^{-1}\Big(E_0[Y_{i,1}]\Big) - G^{-1}\Big(E_0[Y_{i,0}]\Big)
 \]</span></p>
@@ -712,7 +720,7 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 </ul>
 <p>where <span class="math inline">\(D_{i,t}=1\)</span> only after treatment is in place, and zero otherwise.</p>
 <ul>
-<li>This model has been shown to be problematic, because of How OLS estimates the <span class="math inline">\(\theta^{fe}\)</span> parameter.
+<li>This model has been shown to be problematic, because of how OLS estimates the <span class="math inline">\(\theta^{fe}\)</span> parameter.
 <ul>
 <li><span class="math inline">\(\theta^{fe}\)</span> is a weighted average of all possible 2x2 DID designs. <span class="citation" data-cites="goodmanbacon2021">Goodman-Bacon (<a href="#/references" role="doc-biblioref" onclick="">2021</a>)</span></li>
 <li>Some designs use early treated units as controls for late treated units, which might be a violation of the parallel trends assumption.
@@ -772,7 +780,8 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 <ul>
 <li><code>jwdid</code> - Command Name. In charge of getting all interactions -right-
 <ul>
-<li><code>depvar</code> <code>[indepvar]</code> - Declare the dependent variables. Independent variables are optional. They should be time fixed.</li>
+<li><code>depvar</code> <code>[indepvar]</code> - Declare the dependent variables. Independent variables are optional, but should be time fixed.</li>
+<li>An example with RC <a href="https://friosavila.github.io/app_metrics/app_metrics8.html">here</a></li>
 <li><code>[if]</code> <code>[in]</code> <code>[weight]</code>, Declares sample and weights. Only <code>PW</code> is allowed.</li>
 </ul></li>
 </ul>
@@ -807,7 +816,7 @@ y_{i,t} &amp;= \beta_0 + \beta_1 D + \beta_2 T + \theta (D \times T) \\
 </section>
 <section id="example-1-min-wages-on-employment-cs-data" class="slide level2 scrollable">
 <h2>Example 1: Min Wages on Employment CS data</h2>
-<div id="37d4a296" class="cell larger" data-execution_count="3">
+<div id="49a53432" class="cell larger" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw">qui</span>:<span class="kw">ssc</span> install frause</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="kw">qui</span>:frause mpdta, <span class="kw">clear</span></span>
@@ -856,7 +865,7 @@ Absorbed degrees of freedom:
 * = FE nested within cluster; treated as redundant for DoF computation</code></pre>
 </div>
 </div>
-<div id="0b46821b" class="cell larger" data-execution_count="4">
+<div id="2c6d3480" class="cell larger" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">gen</span> emp = <span class="fu">exp</span>(lemp)</span>
 <span id="cb3-2"><a href="#cb3-2"></a>jwdid emp, ivar(county) tvar(<span class="fu">year</span>) gvar(first) method(<span class="kw">poisson</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -900,7 +909,7 @@ Log pseudolikelihood = -2980526.5                       Prob &gt; chi2   = 0.000
 ------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
-<div id="471dff6f" class="cell larger" data-execution_count="5">
+<div id="2ef8befe" class="cell larger" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb5-1"><a href="#cb5-1"></a>jwdid emp, ivar(county) tvar(<span class="fu">year</span>) gvar(first) method(<span class="kw">poisson</span>) never</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -951,7 +960,7 @@ Log pseudolikelihood = -2980438.8                       Prob &gt; chi2   = 0.000
 </section>
 <section id="example-1-aggregations" class="slide level2 scrollable">
 <h2>Example 1: Aggregations</h2>
-<div id="6680453a" class="cell larger" data-execution_count="6">
+<div id="5d0b465b" class="cell larger" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">estat</span> event</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>------------------------------------------------------------------------------
@@ -970,7 +979,7 @@ Log pseudolikelihood = -2980438.8                       Prob &gt; chi2   = 0.000
 ------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
-<div id="986ee7fc" class="cell larger" data-execution_count="7">
+<div id="b14c5a5d" class="cell larger" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">estat</span> <span class="fu">group</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>------------------------------------------------------------------------------
@@ -984,7 +993,7 @@ Log pseudolikelihood = -2980438.8                       Prob &gt; chi2   = 0.000
 ------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
-<div id="e044e916" class="cell larger" data-execution_count="8">
+<div id="0378dfb7" class="cell larger" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">estat</span> calendar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>------------------------------------------------------------------------------
@@ -999,7 +1008,7 @@ __calendar__ |
 ------------------------------------------------------------------------------</code></pre>
 </div>
 </div>
-<div id="f1a8e3e6" class="cell larger" data-execution_count="9">
+<div id="7105c222" class="cell larger" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">qui</span>:<span class="kw">estat</span> event, plot</span>
 <span id="cb13-2"><a href="#cb13-2"></a><span class="kw">graph</span> <span class="kw">export</span> event.png, <span class="kw">replace</span> <span class="kw">width</span>(1000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1007,7 +1016,7 @@ __calendar__ |
 <img data-src="event.png" class="r-stretch"></section>
 <section id="example-2-wooldridge-simulation-data" class="slide level2 scrollable">
 <h2>Example 2: Wooldridge Simulation data</h2>
-<div id="204391f5" class="cell larger" data-execution_count="10">
+<div id="4bd8aae3" class="cell larger" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a><span class="kw">qui</span> {</span>
@@ -1056,7 +1065,7 @@ __calendar__ |
 </div>
 </div>
 <p>Using <code>jwdid</code>:</p>
-<div id="a708ceb2" class="cell larger" data-execution_count="11">
+<div id="3776677c" class="cell larger" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a><span class="kw">qui</span>: jwdid <span class="fu">y</span> x, ivar(id) tvar(<span class="fu">year</span>) trtvar(<span class="fu">w</span>) method(<span class="kw">regress</span>)</span>
@@ -1075,7 +1084,7 @@ __calendar__ |
 </div>
 </div>
 <p><strong>Using Logit</strong></p>
-<div id="a2208b6b" class="cell larger" data-execution_count="12">
+<div id="580652ed" class="cell larger" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a><span class="kw">qui</span> {</span>
@@ -1124,7 +1133,7 @@ __calendar__ |
 </div>
 </div>
 <p>Using <code>jwdid</code>:</p>
-<div id="22118919" class="cell larger" data-execution_count="13">
+<div id="aa1f1d30" class="cell larger" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource stata number-lines code-with-copy"><code class="sourceCode stata"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">clear</span> <span class="ot">all</span></span>
 <span id="cb20-2"><a href="#cb20-2"></a><span class="kw">use</span> nonlinear_did/did_common_6_binary, <span class="kw">clear</span></span>
 <span id="cb20-3"><a href="#cb20-3"></a><span class="kw">qui</span>: jwdid <span class="fu">y</span> x, ivar(id) tvar(<span class="fu">year</span>) trtvar(<span class="fu">w</span>) method(<span class="kw">logit</span>)</span>
@@ -1156,8 +1165,8 @@ __calendar__ |
 <section id="thank-you" class="title-slide slide level1 center">
 <h1>Thank you</h1>
 <p>If interested in other work of mine,</p>
-<p>Visit my <a href="https://friosavila.github.io/">website</a></p>
-<p>Follow me on <a href="https://twitter.com/friosavila">twitter</a></p>
+<p>Visit my website <a href="https://friosavila.github.io/">website</a></p>
+<p>Follow me on <a href="https://twitter.com/friosavila">twitter:</a></p>
 <p>or use my <a href="https://github.com/friosavila/stpackages">Stata packages</a></p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
